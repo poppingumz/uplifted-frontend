@@ -27,9 +27,18 @@ const Footer = () => {
                 {/* Section 3: Contact Info */}
                 <div className="footer-section contact-section">
                     <h3>Contact Us</h3>
-                    <p>Email: support@uplifted.com</p>
-                    <p>Phone: +1 234 567 890</p>
-                    <p>Address: 123 Learning St, Knowledge City</p>
+                    <p>Email: <a href="mailto:support@uplifted.com">support@uplifted.com</a></p>
+                    <p>Phone: <a href="tel:+14155552671">+1 415 555 2671</a></p>
+                    <p>
+                        Address: 
+                        <a 
+                            href="https://www.google.com/maps/place/500+Terry+A+Francois+Blvd,+San+Francisco,+CA+94158"
+                            target="_blank" 
+                            rel="noreferrer"
+                        >
+                        <span> 500 Terry A Francois Blvd, San Francisco, CA 94158</span>
+                        </a>
+                    </p>
                 </div>
 
                 {/* Section 4: Social Media */}

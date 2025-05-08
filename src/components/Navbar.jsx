@@ -38,11 +38,11 @@ const Navbar = () => {
                 <ul className={`nav-links ${menuOpen ? 'active' : ''}`}>
                     <li><Link to="/">Home</Link></li>
                     <li><Link to="/courses">Courses</Link></li>
-                    <li><Link to="/about">About Us</Link></li>
+                    <li><Link to="/aboutus">About Us</Link></li>
                     <li><Link to="/contact">Contact</Link></li>
                     <li><Link to="/profile">Profile</Link></li>
                     <li><Link to="/login" className="nav-button login-button">Login</Link></li>
-                    <li><Link to="/register" className="nav-button register-button">Register</Link></li>
+                    <li><Link to="/account" className="nav-button login-button"><img src="" alt="" /></Link></li>
                 </ul>
             </div>
         </nav>

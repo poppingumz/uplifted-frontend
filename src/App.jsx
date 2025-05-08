@@ -1,10 +1,16 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import Courses from './pages/Courses';
-import Login from './pages/Login';
-import Register from './pages/Register';
+import Courses from './pages/Course/Courses';
+import Login from './pages/Auth/Login';
+import Register from './pages/Auth/Register';
+import AboutUs from './pages/AboutUs'; 
 import Footer from './components/Footer';
+import CreateCoursePage from './pages/Course/CreateCourse';
+import Contact from './pages/Contact';
+import CourseDetails from './pages/Course/CourseDetails';
+import Account from './pages/Account';
+
 
 function App() {
     return (
@@ -15,6 +21,11 @@ function App() {
                     <Route path="/courses" element={<Courses />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/aboutus" element={<AboutUs />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/createcourse" element={<CreateCoursePage />} />
+                    <Route path="/courses/:id" element={<CourseDetails />} />
+                    <Route path="/account/:id" element={<Account />} />
                 </Routes>
                 <Footer />
             </div>
