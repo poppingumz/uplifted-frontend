@@ -169,6 +169,120 @@ button:hover {
   opacity: 0.9;
 }
 
+/* Home Page */
+.uplifted-home {
+  font-family: 'Inter', sans-serif;
+  padding: 2rem;
+  background-color: #f9f9fc;
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, #e0f7fa, #fefefe);
+  border-radius: 24px;
+  padding: 4rem 3rem;
+  margin-bottom: 3rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+.hero-content {
+  flex: 1;
+  min-width: 300px;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.hero-content h1 span {
+  color: #2a9d8f;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.cta-buttons button {
+  padding: 0.75rem 1.5rem;
+  background-color: #2a9d8f;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.cta-buttons button:hover {
+  background-color: #21867a;
+}
+
+.hero-image {
+  flex: 1;
+  text-align: center;
+  min-width: 300px;
+}
+
+.hero-image img {
+  max-width: 100%;
+  height: auto;
+}
+
+.features {
+  text-align: center;
+}
+
+.features h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.feature-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.07);
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+}
+
+.feature-card img {
+  width: 48px;
+  margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #2a2a2a;
+}
+
+.feature-card p {
+  color: #555;
+}
+
+
 /* Courses Page */
 
 .courses-page {
@@ -746,8 +860,7 @@ form label {
 
 form input[type="text"],
 form input[type="number"],
-form input[type="file"],
-form textarea {
+form input[type="file"] {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
@@ -788,7 +901,102 @@ form textarea {
   background-color: #357abd;
 }
 
+/* Account Page*/
+.account-wrapper {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f8f9fa;
+  padding: 2rem;
+}
 
+.account-sidebar {
+  width: 280px;
+  padding-right: 2rem;
+  border-right: 2px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.account-image {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  border: 3px solid #2a9d8f;
+}
+
+.tabs {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.tabs button {
+  padding: 10px;
+  border: none;
+  background-color: #e9ecef;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+.tabs button.active,
+.tabs button:hover {
+  background-color: #2a9d8f;
+  color: white;
+}
+
+.account-main {
+  flex: 1;
+  padding-left: 2rem;
+}
+
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 500px;
+}
+
+.account-form label {
+  font-weight: bold;
+  margin-bottom: -0.5rem;
+}
+
+.account-form input,
+.account-form textarea {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.account-form button {
+  padding: 10px 20px;
+  background-color: #2a9d8f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.account-courses ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.account-loading {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+}
 
 /* Footer Styling */
 .footer {

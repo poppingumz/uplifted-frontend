@@ -12,7 +12,7 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch('http://localhost:8080/auth/login', {
+            const res = await fetch('http://localhost:8080/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
@@ -21,7 +21,7 @@ const Login = () => {
             if (res.ok) {
                 const data = await res.json();
                 Cookies.set('user', JSON.stringify(data), { expires: 30 });
-                navigate('/');
+                navigate(`/account/${data.user.id}`);
             } else {
                 alert('Invalid credentials');
             }

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaBars, FaTimes, FaSearch } from 'react-icons/fa';
+import Cookies from 'js-cookie';
 
 const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const user = Cookies.get('user') ? JSON.parse(Cookies.get('user')) : null;
 
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
@@ -40,9 +42,10 @@ const Navbar = () => {
                     <li><Link to="/courses">Courses</Link></li>
                     <li><Link to="/aboutus">About Us</Link></li>
                     <li><Link to="/contact">Contact</Link></li>
-                    <li><Link to="/profile">Profile</Link></li>
                     <li><Link to="/login" className="nav-button login-button">Login</Link></li>
-                    <li><Link to="/account" className="nav-button login-button"><img src="" alt="" /></Link></li>
+                    {user && (
+                        <Link to={`/account/${user.user.id}`}>My Account</Link>
+                    )}
                 </ul>
             </div>
         </nav>

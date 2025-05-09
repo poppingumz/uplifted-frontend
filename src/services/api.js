@@ -1,6 +1,14 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const API_BASE_URL = 'http://localhost:8080';
+
+const getAuthHeader = () => {
+    const user = Cookies.get('user');
+    if (!user) return {};
+    const parsed = JSON.parse(user);
+    return { Authorization: `Bearer ${parsed.token}` };
+};
 
 export const apiClient = axios.create({
     baseURL: API_BASE_URL,
@@ -39,7 +47,9 @@ export const fetchCourseById = async (id) => {
 
 export const fetchUserById = async (userId) => {
     try {
-        const response = await apiClient.get(`/api/users/${userId}`);
+        const response = await apiClient.get(`/api/users/${userId}`, {
+            headers: getAuthHeader()
+        });
         return response.data;
     } catch (error) {
         console.error('Error fetching user by ID:', error);
@@ -48,14 +58,19 @@ export const fetchUserById = async (userId) => {
 };
 
 export const getCurrentUser = async () => {
-    try {
-        const response = await apiClient.get('/api/users/me');
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching current user:', error);
-        throw error;
+    const user = JSON.parse(Cookies.get('user'));
+    const res = await fetch(`http://localhost:8080/api/users/${user.user.id}`, {
+        headers: {
+            'Authorization': `Bearer ${user.token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+    if (!res.ok) {
+        throw new Error(`Failed to fetch: ${res.status}`);
     }
+    return await res.json();
 };
+
 
 export const updateUser = async (userId, userData, profileImage) => {
     try {
@@ -65,10 +80,11 @@ export const updateUser = async (userId, userData, profileImage) => {
             formData.append('profileImage', profileImage);
         }
 
-        const response = await apiClient.put(`/api/users/${userId}`, formData, {
+        const response = await axios.put(`${API_BASE_URL}/api/users/${userId}`, formData, {
             headers: {
-                'Content-Type': 'multipart/form-data',
-            },
+                ...getAuthHeader(),
+                'Content-Type': 'multipart/form-data'
+            }
         });
 
         return response.data;
@@ -77,6 +93,3 @@ export const updateUser = async (userId, userData, profileImage) => {
         throw error;
     }
 };
-
-
-
