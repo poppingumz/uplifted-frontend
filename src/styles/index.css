@@ -998,6 +998,21 @@ form textarea {
   font-size: 1.2rem;
 }
 
+.logout-button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #d25547!important;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background-color: #ff1500!important;
+}
+
+
 /* Footer Styling */
 .footer {
   background-color: #2a9d8f;

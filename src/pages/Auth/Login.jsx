@@ -3,33 +3,48 @@ import Navbar from '../../components/Navbar';
 import Cookies from 'js-cookie';
 import InputField from '../../components/InputField';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+
+
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        try {
-            const res = await fetch('http://localhost:8080/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+        const res = await fetch('http://localhost:8080/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            const token = data.token;
+            Cookies.set('user', JSON.stringify(data), {
+                expires: 30,
+                sameSite: 'Lax',
+                secure: false
             });
 
-            if (res.ok) {
-                const data = await res.json();
-                Cookies.set('user', JSON.stringify(data), { expires: 30 });
-                navigate(`/account/${data.user.id}`);
-            } else {
-                alert('Invalid credentials');
-            }
-        } catch (err) {
-            console.error('Login failed:', err);
-            alert('Error during login');
+            const decoded = jwtDecode(token);
+            console.log(decoded.role);
+
+            setTimeout(() => navigate('/'), 100);
         }
-    };
+        else {
+            alert('Invalid credentials');
+        }
+    } catch (err) {
+        console.error('Login failed:', err);
+        alert('Error during login');
+    }
+};
+
+
 
     return (
         <>

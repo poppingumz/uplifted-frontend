@@ -27,6 +27,42 @@ const CourseDetails = () => {
         loadCourse();
     }, [id]);
 
+    const [enrolled, setEnrolled] = useState(false);
+    const [message, setMessage] = useState('');
+
+    const handleEnroll = async () => {
+        const cookie = Cookies.get('user');
+        if (!cookie) {
+            alert("You need to log in to enroll.");
+            return;
+        }
+
+        const { user, token } = JSON.parse(cookie);
+
+        try {
+            const res = await fetch(`http://localhost:8080/api/courses/${id}/enroll`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ userId: user.id })
+            });
+
+            if (res.ok) {
+                setEnrolled(true);
+                setMessage("Successfully enrolled!");
+            } else {
+                const result = await res.json();
+                setMessage(result?.error || "Failed to enroll");
+            }
+        } catch (err) {
+            console.error("Enrollment failed", err);
+            setMessage("Error during enrollment");
+        }
+    };
+
+
     if (loading) return <p>Loading course details...</p>;
     if (!course) return <p>Course not found.</p>;
 
@@ -51,7 +87,14 @@ const CourseDetails = () => {
                         {instructor && (
                             <p><strong>Instructor:</strong> {instructor.firstName} {instructor.lastName}</p>
                         )}
-                        <button className="enroll-button">Enroll Now</button>
+                        {message && <p className="message">{message}</p>}
+                        {!enrolled ? (
+                            <button className="enroll-button" onClick={handleEnroll}>
+                                Enroll Now
+                            </button>
+                        ) : (
+                            <p className="enrolled-message">You are enrolled ✅</p>
+                        )}
                     </div>
                 </div>
                 <div className="course-description">

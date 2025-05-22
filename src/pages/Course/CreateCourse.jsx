@@ -1,22 +1,49 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 
-
 const CreateCoursePage = () => {
+    const navigate = useNavigate();
+    const [role, setRole] = useState('');
+    const [decoded, setDecoded] = useState(null);
     const [course, setCourse] = useState({
         title: '',
         description: '',
-        instructorId: 1,  // temp hardcoded until auth is in place
+        instructorId: null,
         category: '',
         enrollmentLimit: 30,
         published: false
     });
     const [image, setImage] = useState(null);
 
+    useEffect(() => {
+        const cookie = Cookies.get('user');
+        if (cookie) {
+            const parsed = JSON.parse(cookie);
+            const decodedToken = jwtDecode(parsed.token);
+            setDecoded(decodedToken);
+
+            if (decodedToken.role === 'STUDENT') {
+                navigate('/unauthorized');
+            } else {
+                setRole(decodedToken.role);
+                setCourse(prev => ({ ...prev, instructorId: decodedToken.userId }));
+                console.log("Decoded JWT:", decodedToken);
+            }
+        } else {
+            navigate('/login');
+        }
+    }, [navigate]);
+
     const handleChange = e => {
-        const { name, value } = e.target;
-        setCourse(prev => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = e.target;
+        setCourse(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
     };
 
     const handleImageChange = e => {
@@ -30,10 +57,18 @@ const CreateCoursePage = () => {
         if (image) formData.append('image', image);
 
         try {
-            await axios.post('http://localhost:8080/api/courses', formData);
+            const parsed = JSON.parse(Cookies.get('user'));
+            await axios.post('http://localhost:8080/api/courses', formData, {
+                headers: {
+                    'Authorization': `Bearer ${parsed.token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
             alert('Course created successfully!');
+            navigate('/account');
         } catch (err) {
             console.error('Failed to create course:', err);
+            alert('Failed to create course.');
         }
     };
 

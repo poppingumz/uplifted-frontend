@@ -6,7 +6,14 @@ import Cookies from 'js-cookie';
 const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const user = Cookies.get('user') ? JSON.parse(Cookies.get('user')) : null;
+    const user = (() => {
+        try {
+          return JSON.parse(Cookies.get('user'));
+        } catch {
+          return null;
+        }
+      })();
+      
 
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
@@ -44,7 +51,7 @@ const Navbar = () => {
                     <li><Link to="/contact">Contact</Link></li>
                     <li><Link to="/login" className="nav-button login-button">Login</Link></li>
                     {user && (
-                        <Link to={`/account/${user.user.id}`}>My Account</Link>
+                        <li><Link to={`/account/${user.user.id}`}>My Account</Link></li>
                     )}
                 </ul>
             </div>
