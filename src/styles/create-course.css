@@ -1,0 +1,635 @@
+/* ================================================
+   Global Variables & Base Styles
+   ================================================ */
+:root {
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --secondary: #1e293b;
+  --accent: #f97316;
+  --accent-hover: #d16f11;
+  --bg-light: #f8fafc;
+  --bg-dark: #0f172a;
+  --muted: #64748b;
+  --success: #22c55e;
+  --danger: #ef4444;
+  --danger-hover: #c53030;
+  --radius: 12px;
+  --shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+  --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg-light);
+  color: var(--secondary);
+  line-height: 1.5;
+}
+
+/* ================================================
+   Page & Container Layout
+   ================================================ */
+.create-course-page {
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(145deg, #e0f2fe, #f8fafc);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.form-container-create {
+  background: #ffffff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2.5rem 3rem;
+  max-width: 80%;
+  width: 100%;
+}
+
+.form-container-create h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--primary);
+}
+
+/* ================================================
+   Step Navigation Buttons
+   ================================================ */
+.steps {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.steps button {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: var(--secondary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 1rem;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  cursor: pointer;
+}
+
+.steps button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+.steps button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
+}
+
+/* ================================================
+   Common Form-Step Styles
+   ================================================ */
+.form-step {
+  margin-bottom: 2rem;
+}
+
+label {
+  font-weight: 600;
+  margin-top: 1rem;
+  display: block;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  margin-top: 0.3rem;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 6px rgba(79, 70, 229, 0.3);
+  outline: none;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* ================================================
+   Step 1: Info Styles
+   ================================================ */
+.info-heading {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1.2rem;
+}
+
+.form-group-inline {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.course-image-preview {
+  margin-top: 0.75rem;
+  border-radius: var(--radius);
+  max-height: 150px;
+  border: 1px solid #e2e8f0;
+}
+
+/* ================================================
+   Step 2: Structure Styles
+   ================================================ */
+.structure-heading {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1.2rem;
+}
+
+.new-part-form {
+  background: #ffffff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+}
+
+.labeled-line {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.dash-separator {
+  font-size: 1.5rem;
+  color: var(--muted);
+  margin: 0 0.75rem;
+}
+
+.resource-tabs {
+  display: flex;
+  gap: 0.8rem;
+  margin: 1.5rem 0 1rem;
+}
+
+.resource-tabs button {
+  flex: 1;
+  padding: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: var(--radius);
+  background: #e2e8f0;
+  color: var(--secondary);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  text-align: center;
+  box-sizing: border-box;
+  height: 3rem;
+}
+
+.resource-tabs button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+  background: var(--primary);
+  color: white;
+}
+
+.resource-tabs button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
+}
+
+.resource-tabs button.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+.tab-content {
+  margin-top: 1rem;
+}
+
+.inline-group {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 700px) {
+  .inline-group {
+    grid-template-columns: 1fr;
+  }
+  .resource-tabs {
+    flex-direction: column;
+  }
+}
+
+/* “Choose File” + “Add File” */
+.inline-group input[type="file"],
+.inline-group button[type="button"] {
+  align-self: start;
+  cursor: pointer;
+}
+
+.inline-group button[type="button"] {
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0 1rem;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  height: 3rem;
+  margin-top: 0.3rem;
+}
+
+.inline-group button[type="button"]:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+  background: var(--primary-hover);
+}
+
+.inline-group button[type="button"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
+}
+
+/* Quiz Inline = “➕” + input */
+.quiz-inline input {
+  flex: 1;
+}
+
+.quiz-inline button {
+  background: var(--accent);
+  border: none;
+  color: white;
+  font-weight: bold;
+  padding: 0 1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  height: 3rem;
+}
+
+.quiz-inline button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+  background: var(--accent-hover);
+}
+
+.quiz-inline button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.4);
+}
+
+.preview-list {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-top: 0.5rem;
+  color: var(--secondary);
+}
+
+.preview-list li {
+  margin-bottom: 0.25rem;
+}
+
+.preview-list button {
+  background: none;
+  border: none;
+  color: var(--danger);
+  font-size: 1rem;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.4s ease, color 0.4s ease;
+}
+
+.preview-list button:hover {
+  transform: translateX(2px);
+  color: var(--danger-hover);
+}
+
+.add-part-btn {
+  background: var(--primary);
+  color: white;
+  padding: 0.9rem 1.5rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  border: none;
+  cursor: pointer;
+  height: 3rem;
+}
+
+.add-part-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+  background: var(--primary-hover);
+}
+
+.add-part-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
+}
+
+.course-outline {
+  margin-top: 2rem;
+}
+
+.part-block {
+  border: 2px solid var(--primary);
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.part-block summary {
+  background: var(--primary);
+  color: white;
+  padding: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+.part-block summary:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+.part-block summary:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
+}
+
+.part-block .part-content {
+  padding: 1rem 1.5rem;
+  background: #f3f4f6;
+}
+
+.part-content ul {
+  padding-left: 1.2rem;
+  list-style-type: disc;
+  margin-bottom: 0.5rem;
+}
+
+.part-content li {
+  margin: 0.3rem 0;
+}
+
+.part-content button {
+  background: var(--danger);
+  color: white;
+  padding: 0.4rem 0.7rem;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+}
+
+.part-content button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--danger-hover);
+}
+
+.part-content button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.4);
+}
+
+/* ================================================
+   Step 3: Review Styles
+   ================================================ */
+.review-step {
+  background: #ffffff;
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  margin-top: 1rem;
+}
+
+.review-heading {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+}
+
+.review-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.review-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.review-label {
+  flex: 0 0 180px;
+  font-weight: 600;
+  color: var(--secondary);
+}
+
+.review-value,
+.part-title {
+  word-break: break-word;
+  white-space: pre-wrap; 
+  overflow-wrap: anywhere;
+  color: var(--muted);
+}
+
+.review-subheading {
+  margin-top: 1.5rem;
+  font-size: 1.3rem;
+  color: var(--secondary);
+  margin-bottom: 0.75rem;
+}
+
+.no-parts {
+  font-style: italic;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+.review-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 2rem;
+}
+
+.review-part {
+  background: var(--bg-light);
+  border: 1px solid #e5e7eb;
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.review-part:hover,
+.review-part:focus-within {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+.part-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.part-content-preview {
+  background: #f3f4f6;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  color: var(--secondary);
+  margin-top: 0.5rem;
+}
+
+/* Toggle Switch */
+.publish-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.toggle-switch {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-switch input {
+  display: none;
+}
+
+.toggle-label {
+  margin-left: 0.75rem;
+  font-weight: 600;
+  color: var(--secondary);
+}
+
+.toggle-switch .slider {
+  position: relative;
+  width: 3.5rem;
+  height: 1.8rem;
+  background: #ccc;
+  border-radius: var(--radius);
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+.toggle-switch .slider::before {
+  content: '';
+  position: absolute;
+  width: 1.4rem;
+  height: 1.4rem;
+  top: 50%;
+  left: 0.2rem;
+  background: white;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.4s ease;
+}
+
+.toggle-switch:hover .slider {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-switch input:checked + .slider {
+  background: var(--success);
+}
+
+.toggle-switch input:checked + .slider::before {
+  transform: translate(1.7rem, -50%);
+}
+
+.submit-course-btn {
+  background: var(--primary);
+  color: white;
+  padding: 0.9rem 1.5rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  margin-top: 1rem;
+  height: 3rem;
+}
+
+.submit-course-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+  background: var(--primary-hover);
+}
+
+.submit-course-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
+}
+
+/* ================================================
+   Step Navigation (Previous/Next) at Bottom
+   ================================================ */
+.step-nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.step-nav-buttons button {
+  background: var(--secondary);
+  color: white;
+  padding: 0.7rem 1.4rem;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  cursor: pointer;
+}
+
+.step-nav-buttons button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+  background: var(--primary-hover);
+}
+
+.step-nav-buttons button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
+}

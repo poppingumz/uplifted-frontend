@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes, FaSearch } from 'react-icons/fa';
 import Cookies from 'js-cookie';
 
 const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const navigate = useNavigate();
+
     const user = (() => {
-        try {
-          return JSON.parse(Cookies.get('user'));
-        } catch {
-          return null;
-        }
-      })();
-      
+  try {
+    const cookie = Cookies.get('user');
+    if (!cookie) return null;
+    const parsed = JSON.parse(cookie);
+    return parsed;
+  } catch (err) {
+    console.error("❌ Failed to parse cookie:", err);
+    return null;
+  }
+})();
+
 
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
@@ -26,6 +32,11 @@ const Navbar = () => {
     const handleSearchSubmit = (e) => {
         e.preventDefault();
         console.log("Searching for:", searchQuery);
+    };
+
+    const handleLogout = () => {
+        Cookies.remove('user');
+        navigate('/login');
     };
 
     return (
@@ -49,9 +60,14 @@ const Navbar = () => {
                     <li><Link to="/courses">Courses</Link></li>
                     <li><Link to="/aboutus">About Us</Link></li>
                     <li><Link to="/contact">Contact</Link></li>
-                    <li><Link to="/login" className="nav-button login-button">Login</Link></li>
+                    {!user && (
+                        <li><Link to="/login" className="nav-button login-button">Login</Link></li>
+                    )}
                     {user && (
-                        <li><Link to={`/account/${user.user.id}`}>My Account</Link></li>
+                        <li><Link to="/account/me">My Account</Link></li>
+                    )}
+                    {user && (
+                        <li><button onClick={handleLogout} className="nav-button logout-button">Logout</button></li>
                     )}
                 </ul>
             </div>

@@ -10,7 +10,7 @@ import CreateCoursePage from './pages/Course/CreateCourse';
 import Contact from './pages/Contact';
 import CourseDetails from './pages/Course/CourseDetails';
 import Account from './pages/Account';
-
+import CreateQuizPage from './pages/Quiz/CreateQuiz'; 
 
 function App() {
     return (
@@ -24,8 +24,11 @@ function App() {
                     <Route path="/aboutus" element={<AboutUs />} />
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/createcourse" element={<CreateCoursePage />} />
+                    <Route path="/createcourse/:id" element={<CreateCoursePage />} />
                     <Route path="/courses/:id" element={<CourseDetails />} />
+                    <Route path="/account" element={<Account />} />
                     <Route path="/account/:id" element={<Account />} />
+                    <Route path="/createquiz" element={<CreateQuizPage />} />
                 </Routes>
                 <Footer />
             </div>

@@ -23,7 +23,7 @@ const Home = () => {
                 <section className="hero">
                     <div className="hero-content">
                         <h1>
-                            Welcome{user ? `, ${user?.user?.firstName || user?.user?.username}` : ''} to <span>UpliftEd</span>
+                            Welcome{user ? `, ${user?.firstName || user?.username}` : ''} to <span>UpliftEd</span>
                         </h1>
                         <p>Empowering learners and educators with the tools to succeed. Explore courses, teach others, and grow together.</p>
                         <div className="cta-buttons">
@@ -45,12 +45,12 @@ const Home = () => {
                             <p>From tech to arts, access a wide range of courses created by top educators.</p>
                         </div>
                         <div className="feature-card">
-                            <img src="/assets/icon-community.svg" alt="Community" />
+                            <img src="/assets/img/course.jpg" alt="Community" />
                             <h3>Active Community</h3>
                             <p>Engage with students and mentors from all around the globe.</p>
                         </div>
                         <div className="feature-card">
-                            <img src="/assets/icon-growth.svg" alt="Growth" />
+                            <img src="../assets/img/BA-Courses.png" alt="Growth" />
                             <h3>Personal Growth</h3>
                             <p>Track your progress and upskill at your own pace with interactive tools.</p>
                         </div>

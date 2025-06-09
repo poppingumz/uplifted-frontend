@@ -1,0 +1,233 @@
+/* ================================================
+   Create Quiz Page Styles (Styled Like Create Course)
+   ================================================ */
+.create-quiz-page {
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.quiz-form-container {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+  padding: 2.5rem 3rem;
+  max-width: 900px;
+  width: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.quiz-form-container h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: #4f46e5;
+}
+
+label {
+  font-weight: 600;
+  display: block;
+  margin-top: 1.2rem;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 0.8rem;
+  margin-top: 0.4rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 6px rgba(79, 70, 229, 0.3);
+  outline: none;
+}
+
+/* ========== Inline Groups ========== */
+.inline-input-group {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1.2rem;
+}
+
+.inline-input {
+  flex: 1;
+}
+
+/* ========== Question Tabs ========== */
+.question-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 2rem 0 1.5rem;
+}
+
+.tab-button {
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  background-color: #e0e7ff;
+  color: #1e3a8a;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.tab-button:hover {
+  background-color: #c7d2fe;
+  transform: translateY(-1px);
+}
+
+.tab-button.active {
+  background-color: #4f46e5;
+  color: white;
+  border: 1px solid #4f46e5;
+  transform: translateY(-2px);
+}
+
+/* ========== Question Block ========== */
+.question-block {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.question-block h4 {
+  margin-top: 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+/* ========== Answer Group ========== */
+.answer-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.answer-block {
+  flex: 1 1 45%;
+  background-color: #f1f5ff;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+}
+
+.answer-block input {
+  margin-top: 0.4rem;
+}
+
+.answer-block .checkbox-label {
+  margin: 0.5rem 0;
+}
+
+/* ========== Buttons ========== */
+.create-quiz-page .btn {
+  background-color: #4f46e5;
+  color: white;
+  padding: 0.9rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.create-quiz-page .btn:hover {
+  background-color: #4338ca;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+.create-quiz-page .btn-danger {
+  background: #ef4444;
+}
+
+.create-quiz-page .btn-danger:hover {
+  background: #c53030;
+}
+
+/* ========== Remove Answer Button ========== */
+.remove-answer {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.remove-answer:hover {
+  color: #c53030;
+}
+
+/* ========== Final Submit Button ========== */
+.submit-quiz-btn {
+  background: #4f46e5;
+  color: white;
+  padding: 0.9rem 1.5rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 2rem;
+  display: inline-block;
+}
+
+.submit-quiz-btn:hover {
+  background: #4338ca;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+input[type="checkbox"] {
+  width: auto;
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #475569;
+  margin-top: 1rem;
+}

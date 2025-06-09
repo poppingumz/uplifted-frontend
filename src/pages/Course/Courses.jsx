@@ -15,15 +15,27 @@ const CoursesPage = () => {
     return (
         <>
             <Navbar />
-            <div className="courses-page">
-                <h1>Available Courses</h1>
-                <div className="course-grid">
+            <div className="courses-container">
+                <h1 className="courses-title">Explore Our Courses</h1>
+                <div className="courses-grid">
                     {courses.map(course => (
                         <div className="course-card" key={course.id}>
-                            <h2>{course.title}</h2>
-                            <p>{course.description}</p>
-                            <p>Category: {course.category}</p>
-                            <Link to={`/courses/${course.id}`} className="view-button">View Details</Link>
+                            {course.imageData && (
+                                <img
+                                    className="course-image"
+                                    src={`data:image/jpeg;base64,${course.imageData}`}
+                                    alt={course.title}
+                                />
+                            )}
+                            <div className="course-info">
+                                <h2>{course.title}</h2>
+                                <p className="course-description">{course.description}</p>
+                                <p className="course-category"><strong>Category:</strong> {course.category}</p>
+                                <p className="course-rating">
+                                    ⭐ {course.rating?.toFixed(1) || 'N/A'} ({course.numberOfReviews || 0} reviews)
+                                </p>
+                                <Link to={`/courses/${course.id}`} className="view-button">View Details</Link>
+                            </div>
                         </div>
                     ))}
                 </div>
