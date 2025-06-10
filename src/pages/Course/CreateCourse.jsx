@@ -11,7 +11,7 @@ import '../../styles/create-course.css';
 
 const CreateCourse = () => {
   const navigate = useNavigate();
-  const { id: courseId } = useParams(); // alias `id` to `courseId`
+  const { id: courseId } = useParams();
   const isEditMode = !!courseId;
 
   const [step, setStep] = useState(1);
@@ -27,10 +27,14 @@ const CreateCourse = () => {
     parts: []
   });
   const [image, setImage] = useState(null);
-  const [newPart, setNewPart] = useState({
-    title: '',
-    contents: []
-  });
+const [newPart, setNewPart] = useState({
+  week: '',
+  title: '',
+  files: [],
+  quizzes: [],
+  videos: [],
+  contents: []
+});
 
 useEffect(() => {
   const cookie = Cookies.get('user');
@@ -57,7 +61,11 @@ useEffect(() => {
         // ⬇️ Enrich course.parts with frontend-specific fields
         const enrichedParts = data.parts?.map(part => {
           const files = part.contents?.filter(c => c.contentType === 'FILE').map(c => c.title);
-          const quizzes = part.contents?.filter(c => c.contentType === 'QUIZ').map(c => c.title);
+const quizzes = part.contents?.filter(c => c.contentType === 'QUIZ').map(c => ({
+  id: c.contentId,
+  title: c.title
+}));
+
           const videos = part.contents?.filter(c => c.contentType === 'VIDEO').map(c => c.title);
           return {
             ...part,
@@ -109,15 +117,12 @@ const handleSubmit = async e => {
   e.preventDefault();
   const formData = new FormData();
 
-  // Add course JSON
   formData.append('course', new Blob([JSON.stringify(course)], { type: 'application/json' }));
 
-  // Add image if present
   if (image) {
     formData.append('image', image);
   }
 
-  // ✅ Append all files from all course parts
   course.parts.forEach(part => {
     if (part.files?.length) {
       part.files.forEach(file => {
@@ -139,7 +144,17 @@ const handleSubmit = async e => {
       await axios.put(`http://localhost:8080/api/courses/${courseId}`, formData, config);
       alert('Course updated successfully!');
     } else {
-      await axios.post('http://localhost:8080/api/courses', formData, config);
+      const res = await axios.post('http://localhost:8080/api/courses', formData, config);
+      const createdCourse = res.data;
+
+      // ✅ Trigger notification
+     await axios.post('http://localhost:8080/api/notifications/send', {
+  category: createdCourse.category,
+  message: `📢 New course "${createdCourse.title}" is now available in ${createdCourse.category}!`
+});
+console.log("🔔 Notification sent for category:", createdCourse.category);
+
+
       alert('Course created successfully!');
     }
 

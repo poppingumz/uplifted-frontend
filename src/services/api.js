@@ -162,5 +162,20 @@ export async function deleteQuiz(quizId, token) {
     }
 }
 
+export const fetchQuizById = async (quizId) => {
+    const response = await apiClient.get(`/api/quizzes/${quizId}`);
+    return response.data;
+};
+
+export const updateQuiz = (quizId, quizData, token) => {
+  return axios.put(`${API_BASE_URL}/api/quizzes/${quizId}`, quizData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
+};
+
+
 
 

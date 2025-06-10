@@ -29,6 +29,8 @@ function App() {
                     <Route path="/account" element={<Account />} />
                     <Route path="/account/:id" element={<Account />} />
                     <Route path="/createquiz" element={<CreateQuizPage />} />
+                    <Route path="/createquiz" element={<CreateQuizPage />} />
+                    <Route path="/createquiz/:id" element={<CreateQuizPage />} />
                 </Routes>
                 <Footer />
             </div>

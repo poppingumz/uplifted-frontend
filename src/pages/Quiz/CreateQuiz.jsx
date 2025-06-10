@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { createQuiz } from '../../services/api';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { createQuiz, fetchQuizById, updateQuiz } from '../../services/api';
 import Navbar from '../../components/Navbar';
 import Cookies from 'js-cookie';
 import '../../styles/create-quiz.css';
@@ -16,6 +16,10 @@ const defaultQuestion = {
 };
 
 const CreateQuiz = () => {
+  const { id } = useParams();
+  const isEditMode = !!id;
+  const navigate = useNavigate();
+
   const [quiz, setQuiz] = useState({
     title: '',
     description: '',
@@ -23,8 +27,23 @@ const CreateQuiz = () => {
     passingMarks: 0,
     questions: []
   });
+
   const [activeTab, setActiveTab] = useState(0);
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadQuizIfEditing = async () => {
+      if (id) {
+        try {
+          const data = await fetchQuizById(id);
+          setQuiz(data);
+        } catch (err) {
+          console.error('Failed to load quiz:', err);
+          alert('Failed to load quiz for editing.');
+        }
+      }
+    };
+    loadQuizIfEditing();
+  }, [id]);
 
   const handleQuizChange = (e) => {
     setQuiz({ ...quiz, [e.target.name]: e.target.value });
@@ -65,74 +84,82 @@ const CreateQuiz = () => {
     setQuiz({ ...quiz, questions: updated });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const cookie = Cookies.get('user');
-      const user = cookie ? JSON.parse(cookie) : null;
-      if (!user) throw new Error('User not found');
-      const payload = {
-        ...quiz,
-        createdById: user.id,
-        courseId: null
-      };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const cookie = Cookies.get('user');
+    const user = cookie ? JSON.parse(cookie) : null;
+    if (!user) throw new Error('User not found');
+
+    const payload = {
+      ...quiz,
+      createdById: user.id,
+      courseId: quiz.courseId || null
+    };
+
+    if (isEditMode) {
+      await updateQuiz(quiz.id, payload, user.token);
+      alert('Quiz updated!');
+    } else {
       await createQuiz(payload, user.token);
       alert('Quiz created!');
-      navigate('/account');
-    } catch (err) {
-      console.error('Quiz creation failed:', err);
-      alert('Failed to create quiz.');
     }
-  };
+
+    navigate('/account');
+  } catch (err) {
+    console.error('Submit failed:', err);
+    alert('Failed to submit quiz.');
+  }
+};
 
   return (
     <>
       <Navbar />
       <div className="create-quiz-page">
         <div className="quiz-form-container">
-          <h2>Create New Quiz</h2>
+          <h2>{id ? 'Edit Quiz' : 'Create New Quiz'}</h2>
 
           <form onSubmit={handleSubmit}>
             <button
-  type="button"
-  className="btn"
-  onClick={() => {
-    setQuiz({
-      title: 'Java Basics Quiz',
-      description: 'Test your understanding of Java fundamentals.',
-      totalMarks: 10,
-      passingMarks: 6,
-      questions: [
-        {
-          text: 'What is the size of an int in Java?',
-          type: 'MULTIPLE_CHOICE',
-          marks: 2,
-          correctAnswer: '4 bytes',
-          requiresReview: false,
-          answers: [
-            { text: '2 bytes', correct: false, explanation: 'That’s short.' },
-            { text: '4 bytes', correct: true, explanation: 'Correct!' },
-            { text: '8 bytes', correct: false, explanation: 'That’s long.' },
-            { text: 'Depends on OS', correct: false, explanation: 'Java defines it explicitly.' }
-          ]
-        },
-        {
-          text: 'True or False: Java supports multiple inheritance.',
-          type: 'TRUE_FALSE',
-          marks: 2,
-          correctAnswer: 'False',
-          requiresReview: false,
-          answers: [
-            { text: 'True', correct: false, explanation: 'Only through interfaces.' },
-            { text: 'False', correct: true, explanation: 'Java avoids diamond problem.' }
-          ]
-        }
-      ]
-    });
-  }}
->
-  Fill Sample Quiz
-</button>
+              type="button"
+              className="btn"
+              onClick={() => {
+                setQuiz({
+                  title: 'Java Basics Quiz',
+                  description: 'Test your understanding of Java fundamentals.',
+                  totalMarks: 10,
+                  passingMarks: 6,
+                  questions: [
+                    {
+                      text: 'What is the size of an int in Java?',
+                      type: 'MULTIPLE_CHOICE',
+                      marks: 2,
+                      correctAnswer: '4 bytes',
+                      requiresReview: false,
+                      answers: [
+                        { text: '2 bytes', correct: false, explanation: 'That’s short.' },
+                        { text: '4 bytes', correct: true, explanation: 'Correct!' },
+                        { text: '8 bytes', correct: false, explanation: 'That’s long.' },
+                        { text: 'Depends on OS', correct: false, explanation: 'Java defines it explicitly.' }
+                      ]
+                    },
+                    {
+                      text: 'True or False: Java supports multiple inheritance.',
+                      type: 'TRUE_FALSE',
+                      marks: 2,
+                      correctAnswer: 'False',
+                      requiresReview: false,
+                      answers: [
+                        { text: 'True', correct: false, explanation: 'Only through interfaces.' },
+                        { text: 'False', correct: true, explanation: 'Java avoids diamond problem.' }
+                      ]
+                    }
+                  ]
+                });
+              }}
+            >
+              Fill Sample Quiz
+            </button>
 
             <label>Title</label>
             <input name="title" value={quiz.title} onChange={handleQuizChange} required />
@@ -252,7 +279,9 @@ const CreateQuiz = () => {
               </div>
             )}
 
-            <button type="submit" className="submit-quiz-btn">Create Quiz</button>
+            <button type="submit" className="submit-quiz-btn">
+              {id ? 'Update Quiz' : 'Create Quiz'}
+            </button>
           </form>
         </div>
       </div>

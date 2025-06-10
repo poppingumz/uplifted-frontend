@@ -1,11 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
-const Step2_Structure = ({ newPart, setNewPart, course, setCourse, deletePart, expandedIndex, toggleExpand }) => {
+const Step2_Structure = ({
+  newPart = { week: '', title: '', files: [], quizzes: [], videos: [] },
+  setNewPart,
+  course,
+  setCourse,
+  deletePart,
+  expandedIndex,
+  toggleExpand
+}) => {
   const [activeTab, setActiveTab] = useState('file');
   const [newFile, setNewFile] = useState(null);
-  const [newQuiz, setNewQuiz] = useState('');
   const [newVideo, setNewVideo] = useState('');
   const [editIndex, setEditIndex] = useState(null);
+  const [quizzes, setQuizzes] = useState([]);
+  const [loadingQuizzes, setLoadingQuizzes] = useState(false);
+
+  useEffect(() => {
+    const fetchQuizzes = async () => {
+      if (activeTab !== 'quiz') {
+        setQuizzes([]);
+        return;
+      }
+      setLoadingQuizzes(true);
+      try {
+        const cookie = Cookies.get('user');
+        const parsed = cookie ? JSON.parse(cookie) : null;
+        if (!parsed?.id || !parsed?.token) {
+          console.warn('User info not found in cookies.');
+          return;
+        }
+        const res = await axios.get(`http://localhost:8080/api/quizzes/user/${parsed.id}`, {
+          headers: {
+            Authorization: `Bearer ${parsed.token}`
+          }
+        });
+        setQuizzes(res.data);
+      } catch (err) {
+        console.error('Failed to load quizzes:', err);
+        setQuizzes([]);
+      } finally {
+        setLoadingQuizzes(false);
+      }
+    };
+    fetchQuizzes();
+  }, [activeTab]);
 
   const handlePartChange = e => {
     const { name, value, files } = e.target;
@@ -16,6 +57,15 @@ const Step2_Structure = ({ newPart, setNewPart, course, setCourse, deletePart, e
     }
   };
 
+const getWeekDisplay = (part) => {
+  if (!part) return '?';
+  if (typeof part.week === 'number' || typeof part.week === 'string') return part.week;
+  if (typeof part.weekNumber === 'number' || typeof part.weekNumber === 'string') return part.weekNumber;
+  return '?';
+};
+
+
+
   const addFile = () => {
     if (newFile) {
       setNewPart(prev => ({ ...prev, files: [...(prev.files || []), newFile] }));
@@ -23,10 +73,9 @@ const Step2_Structure = ({ newPart, setNewPart, course, setCourse, deletePart, e
     }
   };
 
-  const addQuiz = () => {
-    if (newQuiz.trim()) {
-      setNewPart(prev => ({ ...prev, quizzes: [...(prev.quizzes || []), newQuiz] }));
-      setNewQuiz('');
+  const addQuiz = (quiz) => {
+    if (!newPart.quizzes?.some(q => q.id === quiz.id)) {
+      setNewPart(prev => ({ ...prev, quizzes: [...(prev.quizzes || []), quiz] }));
     }
   };
 
@@ -51,31 +100,15 @@ const Step2_Structure = ({ newPart, setNewPart, course, setCourse, deletePart, e
 
   const generateContents = () => {
     const contents = [];
-
-    newPart.files?.forEach((file, i) => {
-      contents.push({
-        contentType: 'FILE',
-        title: file.name || `File ${i + 1}`,
-        contentId: null
-      });
+    newPart.quizzes?.forEach((quiz) => {
+      contents.push({ contentType: 'QUIZ', title: quiz.title, contentId: quiz.id });
     });
-
     newPart.videos?.forEach((video, i) => {
-      contents.push({
-        contentType: 'VIDEO',
-        title: `Video ${i + 1}`,
-        contentId: null
-      });
+      contents.push({ contentType: 'VIDEO', title: `Video ${i + 1}`, contentId: video });
     });
-
-    newPart.quizzes?.forEach((quiz, i) => {
-      contents.push({
-        contentType: 'QUIZ',
-        title: quiz,
-        contentId: null
-      });
+    newPart.files?.forEach((file, i) => {
+      contents.push({ contentType: 'FILE', title: file.name || `File ${i + 1}`, contentId: null });
     });
-
     return contents;
   };
 
@@ -84,7 +117,8 @@ const Step2_Structure = ({ newPart, setNewPart, course, setCourse, deletePart, e
       title: newPart.title,
       weekNumber: parseInt(newPart.week) || null,
       sequence: editIndex !== null ? editIndex + 1 : course.parts.length + 1,
-      contents: generateContents()
+      contents: generateContents(),
+      week: newPart.week
     };
 
     if (editIndex !== null) {
@@ -144,13 +178,26 @@ const Step2_Structure = ({ newPart, setNewPart, course, setCourse, deletePart, e
 
           {activeTab === 'quiz' && (
             <>
-              <div className="inline-group quiz-inline">
-                <input type="text" value={newQuiz} onChange={e => setNewQuiz(e.target.value)} placeholder="Quiz Title" />
-                <button type="button" onClick={addQuiz}>➕ Add Quiz</button>
+              <div className="quiz-list">
+                {loadingQuizzes ? <p>Loading quizzes...</p> : (
+                  quizzes.length ? (
+                    quizzes.map((quiz) => (
+                      <div key={quiz.id} className="quiz-option-card">
+                        <div className="quiz-option-info">
+                          <h4>{quiz.title}</h4>
+                          <p>{quiz.description}</p>
+                        </div>
+                        <button onClick={() => addQuiz(quiz)}>➕ Add</button>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No quizzes found.</p>
+                  )
+                )}
               </div>
               <ul className="preview-list">
                 {newPart.quizzes?.map((q, idx) => (
-                  <li key={idx}>{q} <button onClick={() => removeItem('quizzes', idx)}>❌</button></li>
+                  <li key={idx}>{q.title} <button onClick={() => removeItem('quizzes', idx)}>❌</button></li>
                 ))}
               </ul>
             </>
@@ -171,25 +218,38 @@ const Step2_Structure = ({ newPart, setNewPart, course, setCourse, deletePart, e
           )}
         </div>
 
-        <button type="button" className="add-part-btn" onClick={savePart}>{editIndex !== null ? '💾 Save Part' : '✅ Add Part'}</button>
+        <button type="button" className="add-part-btn" onClick={savePart}>
+          {editIndex !== null ? '💾 Save Part' : '✅ Add Part'}
+        </button>
       </div>
 
       <div className="course-outline">
-        {course.parts.map((part, index) => (
-          <details key={index} className="part-block">
-            <summary>{index + 1}. Week {part.weekNumber} – {part.title}</summary>
-            <div className="part-content">
-              <strong>Files:</strong>
-              <ul>{part.files?.map((f, i) => <li key={i}>{f.name || f}</li>)}</ul>
-              <strong>Quizzes:</strong>
-              <ul>{part.quizzes?.map((q, i) => <li key={i}>{q}</li>)}</ul>
-              <strong>Videos:</strong>
-              <ul>{part.videos?.map((v, i) => <li key={i}><a href={v} target="_blank" rel="noreferrer">{v}</a></li>)}</ul>
-              <button onClick={() => editPart(index)}>✏️ Edit</button>
-              <button onClick={() => deletePart(index)}>🗑️ Delete</button>
-            </div>
-          </details>
-        ))}
+        {(course.parts || []).filter(p => p).map((part, index) => (
+  <details key={index} className="part-block">
+    <summary>
+      {index + 1}. Week {getWeekDisplay(part)} – {part?.title || 'Untitled'}
+    </summary>
+
+    <div className="part-content">
+      <strong>Files:</strong>
+      <ul>{(part.files || []).map((f, i) => <li key={i}>{f?.name || f}</li>)}</ul>
+
+      <strong>Quizzes:</strong>
+      <ul>{(part.quizzes || []).map((q, i) => <li key={i}>{q?.title || q}</li>)}</ul>
+
+      <strong>Videos:</strong>
+      <ul>{(part.videos || []).map((v, i) => (
+        <li key={i}>
+          <a href={v} target="_blank" rel="noreferrer">{v}</a>
+        </li>
+      ))}</ul>
+
+      <button onClick={() => editPart(index)}>✏️ Edit</button>
+      <button onClick={() => deletePart(index)}>🗑️ Delete</button>
+    </div>
+  </details>
+))}
+
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import {
 } from '../services/api';
 import Cookies from 'js-cookie';
 import QuizList from '../components/QuizList';
+import InterestSelector from '../components/InterestSelector';
 
 const Account = () => {
     const [user, setUser] = useState(null);
@@ -21,12 +22,15 @@ const Account = () => {
     const [createdCourses, setCreatedCourses] = useState([]);
     const [enrolledCourses, setEnrolledCourses] = useState([]);
     const [quizzes, setQuizzes] = useState([]);
+    const [interests, setInterests] = useState(() => {
+        const saved = localStorage.getItem('interests');
+        return saved ? JSON.parse(saved) : [];
+    });
 
     const navigate = useNavigate();
 
     useEffect(() => {
         let imageUrl;
-
         const fetchUserAndImage = async () => {
             try {
                 const userData = await getCurrentUser();
@@ -36,42 +40,49 @@ const Account = () => {
                 if (cookie) {
                     const parsed = JSON.parse(cookie);
                     const res = await fetch(`http://localhost:8080/api/users/${userData.id}/profile-image`, {
-                        headers: {
-                            Authorization: `Bearer ${parsed.token}`
-                        }
+                        headers: { Authorization: `Bearer ${parsed.token}` }
                     });
-
                     if (res.ok) {
                         const blob = await res.blob();
                         imageUrl = URL.createObjectURL(blob);
                         setPreview(imageUrl);
-                    } else {
-                        console.warn("Image fetch failed:", res.status);
                     }
                 }
 
                 fetchUserCourses(userData.id).then(setCreatedCourses).catch(console.error);
                 fetchEnrolledCourses(userData.id).then(setEnrolledCourses).catch(console.error);
                 fetchUserQuizzes(userData.id).then(setQuizzes).catch(console.error);
-
             } catch (err) {
                 console.error("Failed to load user or image", err);
             }
         };
 
         fetchUserAndImage();
-
-        return () => {
-            if (imageUrl) URL.revokeObjectURL(imageUrl);
-        };
+        return () => { if (imageUrl) URL.revokeObjectURL(imageUrl); };
     }, []);
 
-    const handleInputChange = (e) => {
+    // 🔁 Sync interests to user cookie whenever they change
+    useEffect(() => {
+        if (!user) return;
+
+        const userStr = Cookies.get('user');
+        if (!userStr) return;
+
+        try {
+            const parsed = JSON.parse(userStr);
+            parsed.interests = interests;
+            Cookies.set('user', JSON.stringify(parsed), { expires: 7 });
+        } catch (e) {
+            console.error("❌ Failed to update user interests in cookie:", e);
+        }
+    }, [interests, user]);
+
+    const handleInputChange = e => {
         const { name, value } = e.target;
         setUser(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleImageChange = (e) => {
+    const handleImageChange = e => {
         const file = e.target.files[0];
         if (file) {
             setProfileImage(file);
@@ -79,7 +90,7 @@ const Account = () => {
         }
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async e => {
         e.preventDefault();
         try {
             await updateUser(user.id, user, profileImage);
@@ -91,41 +102,30 @@ const Account = () => {
     };
 
     const handleLogout = () => {
-        const confirmed = window.confirm("Are you sure you want to log out?");
-        if (confirmed) {
+        if (window.confirm("Are you sure you want to log out?")) {
             Cookies.remove('user');
             navigate('/login');
         }
     };
 
-    const handleDeleteCourse = async (courseId) => {
-        const confirmed = window.confirm("Are you sure you want to delete this course?");
-        if (!confirmed) return;
-
+    const handleDeleteCourse = async courseId => {
+        if (!window.confirm("Are you sure you want to delete this course?")) return;
         try {
-            const cookie = Cookies.get('user');
-            const token = cookie ? JSON.parse(cookie).token : '';
+            const { token } = JSON.parse(Cookies.get('user'));
             await deleteCourse(courseId, token);
-
-            const updatedCourses = createdCourses.filter(c => c.id !== courseId);
-            setCreatedCourses(updatedCourses);
+            setCreatedCourses(prev => prev.filter(c => c.id !== courseId));
         } catch (err) {
             console.error("Delete failed:", err);
             alert("Failed to delete course.");
         }
     };
 
-    const handleDeleteQuiz = async (quizId) => {
-        const confirmed = window.confirm("Are you sure you want to delete this quiz?");
-        if (!confirmed) return;
-
+    const handleDeleteQuiz = async quizId => {
+        if (!window.confirm("Are you sure you want to delete this quiz?")) return;
         try {
-            const cookie = Cookies.get('user');
-            const token = cookie ? JSON.parse(cookie).token : '';
+            const { token } = JSON.parse(Cookies.get('user'));
             await deleteQuiz(quizId, token);
-
-            const updated = quizzes.filter(q => q.id !== quizId);
-            setQuizzes(updated);
+            setQuizzes(prev => prev.filter(q => q.id !== quizId));
         } catch (err) {
             console.error("Delete quiz failed:", err);
             alert("Failed to delete quiz.");
@@ -149,10 +149,14 @@ const Account = () => {
                                 <button onClick={() => setActiveTab('quizzes')} className={activeTab === 'quizzes' ? 'active' : ''}>Quizzes</button>
                             </>
                         )}
+                        {(user.role === 'STUDENT' || user.role === 'TEACHER') && (
+                            <button onClick={() => setActiveTab('interests')} className={activeTab === 'interests' ? 'active' : ''}>Interests</button>
+                        )}
                         <button onClick={() => setActiveTab('enrolled')} className={activeTab === 'enrolled' ? 'active' : ''}>Enrolled Courses</button>
                         <button onClick={handleLogout} className="logout-button">Logout</button>
                     </div>
                 </div>
+
                 <div className="account-main">
                     {activeTab === 'details' && (
                         <form onSubmit={handleSubmit} className="account-form">
@@ -172,9 +176,7 @@ const Account = () => {
                         <div className="account-courses">
                             <div className="account-courses-header">
                                 <h2>Courses You Created</h2>
-                                <button onClick={() => navigate('/createcourse')} className="create-course-button">
-                                    + Create New Course
-                                </button>
+                                <button onClick={() => navigate('/createcourse')} className="create-course-button">+ Create New Course</button>
                             </div>
                             {createdCourses.length === 0 ? (
                                 <p>No created courses yet.</p>
@@ -184,11 +186,7 @@ const Account = () => {
                                         <div key={course.id} className="course-card">
                                             <div className="course-card-clickable" onClick={() => navigate(`/courses/${course.id}`)}>
                                                 {course.imageData && (
-                                                    <img
-                                                        src={`data:image/jpeg;base64,${course.imageData}`}
-                                                        alt={course.title}
-                                                        className="course-card-image"
-                                                    />
+                                                    <img src={`data:image/jpeg;base64,${course.imageData}`} alt={course.title} className="course-card-image" />
                                                 )}
                                                 <div className="course-card-content">
                                                     <h3>{course.title}</h3>
@@ -212,9 +210,14 @@ const Account = () => {
 
                     {user.role === 'TEACHER' && activeTab === 'quizzes' && (
                         <div className="account-courses">
-                            <div className="account-courses-header">
-                            </div>
                             <QuizList quizzes={quizzes} onDeleteQuiz={handleDeleteQuiz} />
+                        </div>
+                    )}
+
+                    {(user.role === 'TEACHER' || user.role === 'STUDENT') && activeTab === 'interests' && (
+                        <div className="account-courses">
+                            <h2>Your Interests</h2>
+                            <InterestSelector selected={interests} setSelected={setInterests} />
                         </div>
                     )}
 
