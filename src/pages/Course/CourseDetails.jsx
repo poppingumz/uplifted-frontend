@@ -1,108 +1,228 @@
+// CourseDetails.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
-import { fetchCourseById, fetchUserById } from '../../services/api';
+import {
+  fetchCourseById,
+  fetchUserById,
+  fetchEnrolledCourses,
+  enrollInCourse,
+  unenrollFromCourse,
+  downloadFile
+} from '../../services/api';
 import Cookies from 'js-cookie';
+import '../../styles/course-details.css';
 
 const CourseDetails = () => {
-    const { id } = useParams();
-    const [course, setCourse] = useState(null);
-    const [instructor, setInstructor] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [enrolled, setEnrolled] = useState(false);
-    const [message, setMessage] = useState('');
+  const { id } = useParams();
+  const [course, setCourse] = useState(null);
+  const [instructor, setInstructor] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [enrolled, setEnrolled] = useState(false);
+  const [message, setMessage] = useState('');
+  const [expandedParts, setExpandedParts] = useState({});
 
-    useEffect(() => {
-        const loadCourse = async () => {
-            try {
-                const courseData = await fetchCourseById(id);
-                setCourse(courseData);
-                if (courseData.instructorId) {
-                    const instructorData = await fetchUserById(courseData.instructorId);
-                    setInstructor(instructorData);
-                }
-            } catch (error) {
-                console.error('Failed to fetch course details', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        loadCourse();
-    }, [id]);
-
-    const handleEnroll = async () => {
-    const cookie = Cookies.get('user');
-    if (!cookie) return alert("Please log in to enroll.");
-
-    const parsed = JSON.parse(cookie);
-    const userId = parsed.id;
-    const token = parsed.token;
-
+  const reloadEnrollment = async () => {
+    const userStr = Cookies.get('user');
+    if (!userStr) return setEnrolled(false);
+    const user = JSON.parse(userStr);
     try {
-        const res = await fetch(`http://localhost:8080/api/courses/${id}/enroll`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ userId })
-        });
-
-        if (res.ok) {
-            setEnrolled(true);
-            setMessage("Successfully enrolled!");
-        } else {
-            const result = await res.json();
-            setMessage(result?.error || "Failed to enroll");
-        }
-    } catch (err) {
-        console.error("Enrollment failed", err);
-        setMessage("Error during enrollment");
+      const list = await fetchEnrolledCourses(user.id);
+      setEnrolled(list.some(c => c.id === Number(id)));
+    } catch {
+      setEnrolled(false);
     }
-};
+  };
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const cd = await fetchCourseById(id);
+        setCourse(cd);
+        if (cd.instructorId) {
+          setInstructor(await fetchUserById(cd.instructorId));
+        }
+        await reloadEnrollment();
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [id]);
+
+  const handleEnroll = async () => {
+    if (!Cookies.get('user')) return alert('Please log in.');
+    try {
+      await enrollInCourse(id);
+      setMessage('Enrolled!');
+      await reloadEnrollment();
+    } catch (e) {
+      setMessage(e.message);
+    }
+  };
+
+  const handleUnenroll = async () => {
+    if (!window.confirm('Unenroll?')) return;
+    try {
+      await unenrollFromCourse(id);
+      setMessage('Unenrolled.');
+      await reloadEnrollment();
+    } catch (e) {
+      setMessage(e.message);
+    }
+  };
+
+  const handleDownload = async (fileId, fileName) => {
+    try {
+      await downloadFile(fileId, fileName);
+    } catch (e) {
+      console.error('Download failed:', e);
+      alert('Download failed');
+    }
+  };
+
+  const togglePart = idx => {
+    setExpandedParts(p => ({ ...p, [idx]: !p[idx] }));
+  };
+
+  if (loading) return <p>Loading…</p>;
+  if (!course) return <p>Course not found.</p>;
+
+  return (
+    <>
+      <Navbar />
+      <div className="course-banner">
+        {course.imageData && (
+          <img
+            className="banner-image"
+            src={`data:image/jpeg;base64,${course.imageData}`}
+            alt={course.title}
+          />
+        )}
+        <div className="banner-content">
+          <h1>{course.title}</h1>
+          <div className="course-meta">
+            <span>📂 {course.category}</span>
+            <span>⭐ {course.rating} ({course.numberOfReviews} reviews)</span>
+            <span>👥 Limit: {course.enrollmentLimit}</span>
+            <span>{course.published ? '✅ Published' : '🕓 Draft'}</span>
+          </div>
+          {message && <p className="message">{message}</p>}
+          {!enrolled ? (
+            <button onClick={handleEnroll} className="enroll-btn">Enroll Now</button>
+          ) : (
+            <>
+              <p className="enrolled-msg">✅ You are enrolled</p>
+              <button onClick={handleUnenroll} className="unenroll-btn">Unenroll</button>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="course-layout">
+        <div className="structure-column">
+          <h2>📚 Course Structure</h2>
+          {course.parts?.map((part, pi) => (
+            <div key={pi} className="course-part">
+              <h3 onClick={() => togglePart(pi)} style={{ cursor: 'pointer' }}>
+                {expandedParts[pi] ? '▼' : '▶'} Week {part.weekNumber}: {part.title}
+              </h3>
+              {expandedParts[pi] && (
+                <ul>
+                  {part.contents.map((c, ci) => {
+                    const { contentType, contentId, title } = c;
+
+                    if (contentType === 'FILE') {
+                      return (
+                        <li key={ci}>
+                          📄 <strong>{title}</strong>{' '}
+                          {enrolled && contentId ? (
+                            <button
+                              className="file-link"
+                              onClick={() => handleDownload(contentId, title)}
+                            >
+                              ⬇ Download
+                            </button>
+                          ) : (
+                            <em>{contentId ? '(Enroll to download)' : '(No file)'}</em>
+                          )}
+                        </li>
+                      );
+                    }
+
+                    if (contentType === 'QUIZ') {
+                      return (
+                        <li key={ci}>
+                          📝 <strong>{title}</strong>{' '}
+                          {enrolled ? (
+                            <button
+                              className="quiz-btn"
+                              onClick={() => window.location.href = `/quiz/${contentId}`}
+                            >
+                              ▶ View Quiz
+                            </button>
+                          ) : (
+                            <em>(Enroll to access quiz)</em>
+                          )}
+                        </li>
+                      );
+                    }
+// VIDEO
+if (contentType === 'VIDEO') {
+  return (
+    <li key={ci}>
+      🎥 <strong>Video</strong>{' '}
+      {enrolled ? (
+        <a
+          href={title}
+          target="_blank"
+          rel="noreferrer"
+          className="watch-link"
+        >
+          ▶ Watch
+        </a>
+      ) : (
+        <em>(Enroll to watch video)</em>
+      )}
+    </li>
+  );
+}
 
 
-    if (loading) return <p>Loading course...</p>;
-    if (!course) return <p>Course not found.</p>;
 
-    return (
-        <>
-            <Navbar />
-            <div className="course-banner">
-                {course.imageData && (
-                    <img
-                        src={`data:image/jpeg;base64,${course.imageData}`}
-                        alt={course.title}
-                        className="banner-image"
-                    />
-                )}
-                <div className="banner-content">
-                    <h1>{course.title}</h1>
-                    <div className="course-meta">
-                        <span>📂 {course.category}</span>
-                        <span>⭐ {course.rating} ({course.numberOfReviews} reviews)</span>
-                        <span>👥 Limit: {course.enrollmentLimit}</span>
-                        <span>{course.published ? '✅ Published' : '🕓 Draft'}</span>
-                    </div>
-                    {message && <p className="message">{message}</p>}
-                    {!enrolled ? (
-                        <button className="enroll-btn" onClick={handleEnroll}>Enroll Now</button>
-                    ) : (
-                        <p className="enrolled-msg">✅ You are enrolled</p>
-                    )}
-                </div>
+                    return null;
+                  })}
+                </ul>
+              )}
             </div>
+          ))}
+        </div>
 
-            {instructor && (
-                <div className="instructor-card">
-                    <img src="/default-profile.png" className="instructor-img" alt="Instructor" />
-                    <h3>{instructor.firstName} {instructor.lastName}</h3>
-                    <p className="instructor-title">Instructor</p>
-                    <p className="instructor-bio">{instructor.bio || "This instructor has not provided a bio yet."}</p>
-                </div>
-            )}
-        </>
-    );
+        {instructor && (
+          <div className="instructor-column">
+            <div className="instructor-card large">
+              <img
+                className="instructor-img"
+                src={
+                  instructor.profileImage
+                    ? `data:image/jpeg;base64,${instructor.profileImage}`
+                    : '/default-profile.png'
+                }
+                alt="Instructor"
+              />
+              <h3>{instructor.firstName} {instructor.lastName}</h3>
+              <p className="instructor-title">Instructor</p>
+              <p className="instructor-bio">
+                {instructor.bio || 'No bio yet.'}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
 };
 
 export default CourseDetails;

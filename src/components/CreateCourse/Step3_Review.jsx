@@ -40,11 +40,25 @@ const Step3_Review = ({ course, handleChange, handleSubmit }) => {
               <div className="part-info">
                 <strong>{index + 1}.</strong>
                 <span className="part-title"> Week {part.weekNumber} – {part.title}</span>
-                <span className="part-meta">(📝 {part.quizzes?.length || 0} quizzes, 🎥 {part.videos?.length || 0} videos)</span>
               </div>
               <div className="part-content-preview">
-                {part.content ? <p>{part.content}</p> : <p><em>No content provided.</em></p>}
-              </div>
+  {(part.quizzes?.length > 0 || part.videos?.length > 0 || part.files?.length > 0) ? (
+    <>
+      {part.files?.length > 0 && (
+        <p>📄 <strong>{part.files.length}</strong> file(s) added</p>
+      )}
+      {part.quizzes?.length > 0 && (
+        <p>📝 <strong>{part.quizzes.length}</strong> quiz(zes) added</p>
+      )}
+      {part.videos?.length > 0 && (
+        <p>🎥 <strong>{part.videos.length}</strong> video(s) added</p>
+      )}
+    </>
+  ) : (
+    <p><em>No content provided.</em></p>
+  )}
+</div>
+
             </li>
           ))}
         </ul>

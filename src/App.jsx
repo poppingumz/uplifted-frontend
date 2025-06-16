@@ -11,6 +11,9 @@ import Contact from './pages/Contact';
 import CourseDetails from './pages/Course/CourseDetails';
 import Account from './pages/Account';
 import CreateQuizPage from './pages/Quiz/CreateQuiz'; 
+import Unauthorized from './pages/Unauthorized'; 
+import QuizPage from './pages/Quiz/QuizPage';
+
 
 function App() {
     return (
@@ -31,6 +34,8 @@ function App() {
                     <Route path="/createquiz" element={<CreateQuizPage />} />
                     <Route path="/createquiz" element={<CreateQuizPage />} />
                     <Route path="/createquiz/:id" element={<CreateQuizPage />} />
+                    <Route path="/quiz/:id" element={<QuizPage />} />
+                    <Route path="/unauthorized" element={<Unauthorized />} />
                 </Routes>
                 <Footer />
             </div>

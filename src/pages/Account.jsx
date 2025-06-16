@@ -29,6 +29,14 @@ const Account = () => {
 
     const navigate = useNavigate();
 
+     useEffect(() => {
+        const userCookie = Cookies.get('user');
+        if (!userCookie) {
+            navigate('/login', { replace: true });
+        }
+    }, []);
+
+
     useEffect(() => {
         let imageUrl;
         const fetchUserAndImage = async () => {
@@ -208,18 +216,20 @@ const Account = () => {
                         </div>
                     )}
 
-                    {user.role === 'TEACHER' && activeTab === 'quizzes' && (
+                   {user.role === 'TEACHER' && activeTab === 'quizzes' && (
                         <div className="account-courses">
                             <QuizList quizzes={quizzes} onDeleteQuiz={handleDeleteQuiz} />
                         </div>
-                    )}
+                        )}
 
-                    {(user.role === 'TEACHER' || user.role === 'STUDENT') && activeTab === 'interests' && (
-                        <div className="account-courses">
-                            <h2>Your Interests</h2>
-                            <InterestSelector selected={interests} setSelected={setInterests} />
-                        </div>
-                    )}
+                        {(user.role === 'TEACHER' || user.role === 'STUDENT') && activeTab === 'interests' && (
+  <div className="account-courses">
+    <h2>Your Interests</h2>
+    <InterestSelector selected={interests} setSelected={setInterests} />
+  </div>
+)}
+
+
 
                     {activeTab === 'enrolled' && (
                         <div className="account-courses">

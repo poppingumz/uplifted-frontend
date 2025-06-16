@@ -29,21 +29,40 @@ const CreateQuiz = () => {
   });
 
   const [activeTab, setActiveTab] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const cookie = Cookies.get('user');
+    if (!cookie) {
+      navigate('/login');
+      return;
+    }
+
+    const user = JSON.parse(cookie);
+    if (!user || user.role !== 'TEACHER') {
+      navigate('/unauthorized');
+      return;
+    }
+
     const loadQuizIfEditing = async () => {
       if (id) {
         try {
           const data = await fetchQuizById(id);
+          if (data.createdById !== user.id) {
+            navigate('/unauthorized');
+            return;
+          }
           setQuiz(data);
         } catch (err) {
           console.error('Failed to load quiz:', err);
           alert('Failed to load quiz for editing.');
         }
       }
+      setLoading(false);
     };
+
     loadQuizIfEditing();
-  }, [id]);
+  }, [id, navigate]);
 
   const handleQuizChange = (e) => {
     setQuiz({ ...quiz, [e.target.name]: e.target.value });
@@ -84,33 +103,35 @@ const CreateQuiz = () => {
     setQuiz({ ...quiz, questions: updated });
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const cookie = Cookies.get('user');
-    const user = cookie ? JSON.parse(cookie) : null;
-    if (!user) throw new Error('User not found');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const cookie = Cookies.get('user');
+      const user = cookie ? JSON.parse(cookie) : null;
+      if (!user) throw new Error('User not found');
 
-    const payload = {
-      ...quiz,
-      createdById: user.id,
-      courseId: quiz.courseId || null
-    };
+      const payload = {
+        ...quiz,
+        createdById: user.id,
+        courseId: quiz.courseId || null
+      };
 
-    if (isEditMode) {
-      await updateQuiz(quiz.id, payload, user.token);
-      alert('Quiz updated!');
-    } else {
-      await createQuiz(payload, user.token);
-      alert('Quiz created!');
+      if (isEditMode) {
+        await updateQuiz(quiz.id, payload, user.token);
+        alert('Quiz updated!');
+      } else {
+        await createQuiz(payload, user.token);
+        alert('Quiz created!');
+      }
+
+      navigate('/account');
+    } catch (err) {
+      console.error('Submit failed:', err);
+      alert('Failed to submit quiz.');
     }
+  };
 
-    navigate('/account');
-  } catch (err) {
-    console.error('Submit failed:', err);
-    alert('Failed to submit quiz.');
-  }
-};
+  if (loading) return <div className="loading">Loading...</div>;
 
   return (
     <>
@@ -260,7 +281,7 @@ const CreateQuiz = () => {
                         placeholder="Explanation"
                         value={a.explanation}
                         onChange={e => handleAnswerChange(activeTab, aIdx, 'explanation', e.target.value)}
-                      />
+                      />  
                       <button
                         type="button"
                         className="remove-answer"

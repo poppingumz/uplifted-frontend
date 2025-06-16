@@ -32,7 +32,7 @@ const Step2_Structure = ({
           console.warn('User info not found in cookies.');
           return;
         }
-        const res = await axios.get(`http://localhost:8080/api/quizzes/user/${parsed.id}`, {
+        const res = await axios.get(`http://localhost:8080/api/quizzes/creator/${parsed.id}`, {
           headers: {
             Authorization: `Bearer ${parsed.token}`
           }
@@ -113,13 +113,17 @@ const getWeekDisplay = (part) => {
   };
 
   const savePart = () => {
-    const partToSave = {
-      title: newPart.title,
-      weekNumber: parseInt(newPart.week) || null,
-      sequence: editIndex !== null ? editIndex + 1 : course.parts.length + 1,
-      contents: generateContents(),
-      week: newPart.week
-    };
+const partToSave = {
+  title: newPart.title,
+  weekNumber: parseInt(newPart.week) || null,
+  sequence: editIndex !== null ? editIndex + 1 : course.parts.length + 1,
+  contents: generateContents(),
+  week: newPart.week,
+  files: newPart.files || [],
+  quizzes: newPart.quizzes || [],
+  videos: newPart.videos || []
+};
+
 
     if (editIndex !== null) {
       const updatedParts = [...course.parts];
@@ -151,8 +155,8 @@ const getWeekDisplay = (part) => {
 
       <div className="new-part-form">
         <div className="inline-group labeled-line">
-          <input type="number" name="week" placeholder="Week" value={newPart.week} onChange={handlePartChange} />
           <input type="text" name="title" placeholder="Part Title" value={newPart.title} onChange={handlePartChange} />
+          <input type="number" name="week" placeholder="Week" value={newPart.week} onChange={handlePartChange} />
         </div>
 
         <div className="resource-tabs">

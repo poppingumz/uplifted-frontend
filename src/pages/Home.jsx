@@ -3,6 +3,10 @@ import Cookies from 'js-cookie';
 import Navbar from '../components/Navbar';
 import { useNavigate } from 'react-router-dom';
 import Illustration from '../assets/img/Illustration_main.jpg';
+import DiverseCoursesImg from '../assets/img/diverse.png';
+import CommunityCoursesImg from '../assets/img/community.png';
+import GrowthCoursesImg from '../assets/img/growth.png';
+
 
 
 const Home = () => {
@@ -40,17 +44,17 @@ const Home = () => {
                     <h2>Why Choose UpliftEd?</h2>
                     <div className="features-grid">
                         <div className="feature-card">
-                            <img src="/assets/icon-courses.svg" alt="Courses" />
+                            <img src={DiverseCoursesImg} alt="Courses" />
                             <h3>Diverse Courses</h3>
                             <p>From tech to arts, access a wide range of courses created by top educators.</p>
                         </div>
                         <div className="feature-card">
-                            <img src="/assets/img/course.jpg" alt="Community" />
+                            <img src= {CommunityCoursesImg} alt="Community" />
                             <h3>Active Community</h3>
                             <p>Engage with students and mentors from all around the globe.</p>
                         </div>
                         <div className="feature-card">
-                            <img src="../assets/img/BA-Courses.png" alt="Growth" />
+                            <img src= {GrowthCoursesImg} alt="Growth" />
                             <h3>Personal Growth</h3>
                             <p>Track your progress and upskill at your own pace with interactive tools.</p>
                         </div>

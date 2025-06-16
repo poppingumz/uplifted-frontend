@@ -17,6 +17,30 @@ const CoursesPage = () => {
             <Navbar />
             <div className="courses-container">
                 <h1 className="courses-title">Explore Our Courses</h1>
+
+                {/* Filters */}
+                <div className="filters-grid">
+                    <input
+                        type="text"
+                        placeholder="Search by title"
+                        className="filter-input"
+                    />
+                    <select className="filter-select">
+                        <option value="">Category</option>
+                        <option value="Programming">Programming</option>
+                        <option value="Design">Design</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Business">Business</option>
+                    </select>
+                    <select className="filter-select">
+                        <option value="">Sort by</option>
+                        <option value="newest">Newest</option>
+                        <option value="oldest">Oldest</option>
+                        <option value="oldest">Most Popular</option>
+                    </select>
+                </div>
+
+                {/* Grid */}
                 <div className="courses-grid">
                     {courses.map(course => (
                         <div className="course-card" key={course.id}>

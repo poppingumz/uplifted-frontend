@@ -1,0 +1,34 @@
+.unauthorized-container {
+  text-align: center;
+  padding: 4rem;
+  max-width: 600px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+}
+
+.unauthorized-container h1 {
+  font-size: 2.5rem;
+  color: #ff4444;
+  margin-bottom: 1rem;
+}
+
+.unauthorized-container p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.unauthorized-container button {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.unauthorized-container button:hover {
+  background-color: #005fa3;
+}

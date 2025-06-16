@@ -198,7 +198,7 @@ textarea {
   color: var(--secondary);
   border: none;
   cursor: pointer;
-  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, 0.4s ease;
   text-align: center;
   box-sizing: border-box;
   height: 3rem;
@@ -258,7 +258,7 @@ textarea {
   border-radius: var(--radius);
   border: none;
   cursor: pointer;
-  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, 0.4s ease;
   height: 3rem;
   margin-top: 0.3rem;
 }
@@ -287,7 +287,7 @@ textarea {
   padding: 0 1rem;
   border-radius: var(--radius);
   cursor: pointer;
-  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, 0.4s ease;
   height: 3rem;
 }
 
@@ -336,7 +336,7 @@ textarea {
   font-size: 1rem;
   font-weight: 600;
   margin-top: 1.5rem;
-  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, 0.4s ease;
   border: none;
   cursor: pointer;
   height: 3rem;
@@ -375,7 +375,7 @@ textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: background 0.4s ease, box-shadow 0.4s ease;
+  transition: 0.4s ease, box-shadow 0.4s ease;
 }
 
 .part-block summary:hover {
@@ -411,7 +411,7 @@ textarea {
   border-radius: var(--radius);
   font-size: 0.9rem;
   cursor: pointer;
-  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, 0.4s ease;
 }
 
 .part-content button:hover {
@@ -550,7 +550,7 @@ textarea {
   height: 1.8rem;
   background: #ccc;
   border-radius: var(--radius);
-  transition: background 0.4s ease, box-shadow 0.4s ease;
+  transition: 0.4s ease, box-shadow 0.4s ease;
 }
 
 .toggle-switch .slider::before {
@@ -587,7 +587,7 @@ textarea {
   font-weight: 600;
   border: none;
   cursor: pointer;
-  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, 0.4s ease;
   margin-top: 1rem;
   height: 3rem;
 }
@@ -619,7 +619,7 @@ textarea {
   border: none;
   border-radius: var(--radius);
   font-weight: 600;
-  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, 0.4s ease;
   cursor: pointer;
 }
 

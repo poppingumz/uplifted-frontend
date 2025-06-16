@@ -1,0 +1,170 @@
+/* ==================== QUIZ CONTAINER ==================== */
+.quiz-container {
+  min-width: 65%;
+  margin: 3rem auto;
+  padding: 2.5rem 2rem;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.07);
+  font-family: 'Segoe UI', sans-serif;
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==================== HEADER ==================== */
+.quiz-container h1 {
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  color: #1f2a44;
+}
+
+.description, .info {
+  font-size: 1rem;
+  color: #5a5a5a;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+/* ==================== QUESTION ==================== */
+.question-box {
+  margin: 2rem 0;
+  padding: 1rem 1.5rem;
+  border-left: 5px solid #3f88f7;
+  background: #f5faff;
+  border-radius: 10px;
+}
+
+.question-box h3 {
+  margin-bottom: 0.8rem;
+  color: #2d2d2d;
+}
+
+/* ==================== ANSWERS ==================== */
+.answer-option {
+  display: block;
+  margin: 0.4rem 0;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.answer-option input[type="radio"] {
+  margin-right: 0.6rem;
+  transform: scale(1.2);
+}
+
+/* ==================== BUTTON ==================== */
+.submit-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #3f88f7, #3f7ae0);
+  color: white;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.submit-btn:hover {
+  background: linear-gradient(135deg, #2d6ae6, #2a5fd4);
+  transform: translateY(-2px);
+}
+
+/* ==================== FEEDBACK & EXPLANATION ==================== */
+.feedback {
+  margin-top: 0.8rem;
+  font-weight: bold;
+  color: #222;
+}
+
+.feedback.correct {
+  color: #28a745;
+}
+
+.feedback.incorrect {
+  color: #dc3545;
+}
+
+.explanation {
+  margin-top: 0.5rem;
+  font-style: italic;
+  color: #3f88f7;
+}
+
+/* ==================== RESULTS ==================== */
+.results-box {
+  background: #f1fdf1;
+  border: 2px solid #7bd67b;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-top: 2rem;
+  box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.05);
+}
+
+.results-box h2 {
+  margin-bottom: 0.5rem;
+  color: #2e7d32;
+}
+
+.results-box p {
+  margin: 0.3rem 0;
+  font-size: 1rem;
+}
+
+.answer-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.4rem 0;
+  font-size: 1rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #f5faff;
+  transition: background 0.2s ease;
+}
+
+.answer-option:hover {
+  background-color: #e8f0ff;
+}
+
+.answer-option input[type="radio"] {
+  margin: 0;
+  transform: scale(1.2);
+  accent-color: #3f88f7;
+  cursor: pointer;
+  appearance: none;
+  border: 2px solid #bbb;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-content: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.answer-option input[type="radio"]::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transform: scale(0);
+  background-color: #3f88f7;
+  transition: 120ms transform ease-in-out;
+}
+
+.answer-option input[type="radio"]:checked::before {
+  transform: scale(1);
+}
+
+.answer-option input[type="radio"]:focus {
+  outline: none;
+  box-shadow: none;
+}
