@@ -4,7 +4,7 @@ stages:
 end2end-test:
   stage: end2end-test
   tags:
-    - shell
+    - pwsh
   script:
     # Build backend image
     - docker build -t uplifted-backend "C:\Projects\uplifted-learning-platform"
