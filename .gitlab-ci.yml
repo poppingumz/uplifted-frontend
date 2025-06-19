@@ -1,58 +1,36 @@
 stages:
-  - build
-  - test
+  - end2end-test
 
-variables:
-  DOCKER_TLS_CERTDIR: ""
-
-build:
-  stage: build
-  image: docker:latest
-  services:
-    - docker:dind
+end2end-test:
+  stage: end2end-test
+  tags:
+    - shell
   script:
-    docker build --build-arg VITE_API_URL=http://localhost:8080 -t uplifted-frontend .
-  artifacts:
-    name: "frontend-image"
-    expire_in: 1 hour
+    # Build backend image
+    - docker build -t uplifted-backend "C:\Projects\uplifted-learning-platform"
 
-test:
-  stage: test
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    docker network create uplifted-net
-    docker run -d --rm \
-      --name mysql_test \
-      --network uplifted-net \
-      -e MYSQL_ROOT_PASSWORD=root \
-      -e MYSQL_DATABASE=testdb \
-      -e MYSQL_USER=testuser \
-      -e MYSQL_PASSWORD=testpass \
-      mysql:8.0
+    # Run backend container
+    - docker run -d --rm `
+        --name uplifted-backend `
+        -p 8080:8080 `
+        uplifted-backend
 
-    docker run -d --rm \
-      --name backend_test \
-      --network uplifted-net \
-      -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql_test:3306/testdb \
-      -e SPRING_DATASOURCE_USERNAME=testuser \
-      -e SPRING_DATASOURCE_PASSWORD=testpass \
-      -e SPRING_JPA_HIBERNATE_DDL_AUTO=update \
-      -p 8080:8080 \
-      uplifted-backend
+    # Build frontend image
+    - docker build -t uplifted-frontend `
+        --build-arg VITE_API_URL=http://localhost:8080 `
+        "C:\Projects\uplifted-frontend"
 
-    docker build --build-arg VITE_API_URL=http://backend_test:8080 -t uplifted-frontend .
+    # Run frontend container
+    - docker run -d --rm `
+        --name uplifted-frontend `
+        -p 5173:80 `
+        uplifted-frontend
 
-    docker run -d --rm \
-      --name frontend_test \
-      --network uplifted-net \
-      -p 5173:80 \
-      uplifted-frontend
+    # Wait for backend and frontend to be fully started
+    - Start-Sleep -Seconds 20
 
-    docker run --rm \
-      --network uplifted-net \
-      -v $CI_PROJECT_DIR:/e2e \
-      -w /e2e \
-      cypress/included:12.17.4 \
-      npx cypress run --config baseUrl=http://frontend_test
+    # Run Cypress tests locally
+    - cd "C:\Projects\uplifted-frontend"
+    - npm install
+    - npx cypress install
+    - npx cypress run
