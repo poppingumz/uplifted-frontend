@@ -7,7 +7,6 @@ variables:
 
 build:
   stage: build
-  # (this job can still run in a Docker executor if you like)
   image: docker:latest
   services:
     - docker:dind
@@ -20,14 +19,23 @@ build:
 test:
   stage: test
   script:
-    # set up the Docker network & containers
-    - docker network create uplifted-net
+    # create the Docker network only if it doesn't already exist
+    - |
+      if (-not (docker network ls --filter name=^uplifted-net$ --format "{{.Name}}")) {
+        docker network create uplifted-net
+      } else {
+        Write-Host "Network 'uplifted-net' already exists, continuing..."
+      }
+
+    # start MySQL test container
     - docker run -d --rm --name mysql_test --network uplifted-net `
         -e MYSQL_ROOT_PASSWORD=root `
         -e MYSQL_DATABASE=testdb `
         -e MYSQL_USER=testuser `
         -e MYSQL_PASSWORD=testpass `
         mysql:8.0
+
+    # start backend container
     - docker run -d --rm --name backend_test --network uplifted-net `
         -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql_test:3306/testdb `
         -e SPRING_DATASOURCE_USERNAME=testuser `
@@ -35,16 +43,19 @@ test:
         -e SPRING_JPA_HIBERNATE_DDL_AUTO=update `
         -p 8080:8080 `
         uplifted-backend
+
+    # rebuild frontend image pointing at backend_test
     - docker build --build-arg VITE_API_URL=http://backend_test:8080 -t uplifted-frontend .
+
+    # remove any old frontend_test container, then start a new one
     - docker rm -f frontend_test 2>$null
     - docker run -d --name frontend_test --network uplifted-net -p 5173:80 uplifted-frontend
 
     # give services a moment to start
     - Start-Sleep -Seconds 10
 
-    # switch into your front-end folder
+    # switch into your front-end folder and run Cypress
     - Set-Location "$Env:CI_PROJECT_DIR\uplifted-frontend"
-    # install & run Cypress locally
     - npm install
     - npx cypress install
     - npx cypress run --config baseUrl=http://localhost:5173
