@@ -1,21 +1,3 @@
-stages:
-  - build
-  - test
-
-variables:
-  DOCKER_TLS_CERTDIR: ""
-
-build:
-  stage: build
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    docker build --build-arg VITE_API_URL=http://localhost:8080 -t uplifted-frontend .
-  artifacts:
-    name: "frontend-image"
-    expire_in: 1 hour
-
 test:
   stage: test
   image: docker:latest
@@ -23,34 +5,34 @@ test:
     - docker:dind
   script:
     docker network create uplifted-net
-    docker run -d --rm \
-      --name mysql_test \
-      --network uplifted-net \
-      -e MYSQL_ROOT_PASSWORD=root \
-      -e MYSQL_DATABASE=testdb \
-      -e MYSQL_USER=testuser \
-      -e MYSQL_PASSWORD=testpass \
+    docker run -d --rm `
+      --name mysql_test `
+      --network uplifted-net `
+      -e MYSQL_ROOT_PASSWORD=root `
+      -e MYSQL_DATABASE=testdb `
+      -e MYSQL_USER=testuser `
+      -e MYSQL_PASSWORD=testpass `
       mysql:8.0
 
-    docker run -d --rm \
-      --name backend_test \
-      --network uplifted-net \
-      -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql_test:3306/testdb \
-      -e SPRING_DATASOURCE_USERNAME=testuser \
-      -e SPRING_DATASOURCE_PASSWORD=testpass \
-      -e SPRING_JPA_HIBERNATE_DDL_AUTO=update \
-      -p 8080:8080 \
+    docker run -d --rm `
+      --name backend_test `
+      --network uplifted-net `
+      -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql_test:3306/testdb `
+      -e SPRING_DATASOURCE_USERNAME=testuser `
+      -e SPRING_DATASOURCE_PASSWORD=testpass `
+      -e SPRING_JPA_HIBERNATE_DDL_AUTO=update `
+      -p 8080:8080 `
       uplifted-backend
 
     docker build --build-arg VITE_API_URL=http://backend_test:8080 -t uplifted-frontend .
 
-    docker run -d --rm \
-      --name frontend_test \
-      --network uplifted-net \
-      -p 5173:80 \
+    docker run -d --rm `
+      --name frontend_test `
+      --network uplifted-net `
+      -p 5173:80 `
       uplifted-frontend
 
-    cd $CI_PROJECT_DIR/uplifted-frontend
+    Set-Location "$CI_PROJECT_DIR\uplifted-frontend"
     npm install
     npx cypress install
     npx cypress run --config baseUrl=http://localhost:5173
