@@ -19,15 +19,18 @@ build:
 test:
   stage: test
   script:
-    # create the Docker network only if it doesn't already exist
+    # 🧹 Cleanup any leftover containers from prior runs
+    - docker rm -f mysql_test backend_test frontend_test || Write-Host "No old test containers to remove"
+
+    # create the Docker network if needed
     - |
       if (-not (docker network ls --filter name=^uplifted-net$ --format "{{.Name}}")) {
         docker network create uplifted-net
       } else {
-        Write-Host "Network 'uplifted-net' already exists, continuing..."
+        Write-Host "Network 'uplifted-net' already exists"
       }
 
-    # start MySQL test container
+    # start fresh MySQL test container
     - docker run -d --rm --name mysql_test --network uplifted-net `
         -e MYSQL_ROOT_PASSWORD=root `
         -e MYSQL_DATABASE=testdb `
@@ -35,7 +38,7 @@ test:
         -e MYSQL_PASSWORD=testpass `
         mysql:8.0
 
-    # start backend container
+    # start fresh backend test container
     - docker run -d --rm --name backend_test --network uplifted-net `
         -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql_test:3306/testdb `
         -e SPRING_DATASOURCE_USERNAME=testuser `
@@ -47,11 +50,10 @@ test:
     # rebuild frontend image pointing at backend_test
     - docker build --build-arg VITE_API_URL=http://backend_test:8080 -t uplifted-frontend .
 
-    # remove any old frontend_test container, then start a new one
-    - docker rm -f frontend_test 2>$null
-    - docker run -d --name frontend_test --network uplifted-net -p 5173:80 uplifted-frontend
+    # start fresh frontend test container
+    - docker run -d --rm --name frontend_test --network uplifted-net -p 5173:80 uplifted-frontend
 
-    # give services a moment to start
+    # give services a moment to warm up
     - Start-Sleep -Seconds 10
 
     # switch into your front-end folder and run Cypress
