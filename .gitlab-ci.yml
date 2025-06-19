@@ -23,6 +23,7 @@ test:
     - docker:dind
   script:
     docker network create uplifted-net
+
     docker run -d --rm `
       --name mysql_test `
       --network uplifted-net `
@@ -44,13 +45,17 @@ test:
 
     docker build --build-arg VITE_API_URL=http://backend_test:8080 -t uplifted-frontend .
 
-    docker run -d --rm `
+    docker rm -f frontend_test 2>$null
+    docker run -d `
       --name frontend_test `
       --network uplifted-net `
       -p 5173:80 `
       uplifted-frontend
 
+    Start-Sleep -Seconds 10
+
     Set-Location "$CI_PROJECT_DIR\uplifted-frontend"
     npm install
     npx cypress install
     npx cypress run --config baseUrl=http://localhost:5173
+
