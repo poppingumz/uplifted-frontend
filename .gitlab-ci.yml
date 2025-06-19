@@ -57,7 +57,7 @@ test:
     - Start-Sleep -Seconds 10
 
     # Run Cypress from the project directory
-    - Set-Location "$Env:CI_PROJECT_DIR\uplifted-frontend"
+    - Set-Location "$Env:CI_PROJECT_DIR"
     - npm install
     - npx cypress install
     - npx cypress run --config baseUrl=http://localhost:5173
