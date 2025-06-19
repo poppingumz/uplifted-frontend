@@ -2,12 +2,10 @@ import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import Navbar from '../components/Navbar';
 import { useNavigate } from 'react-router-dom';
-import Illustration from '../assets/img/Illustration_main.jpg';
+import Illustration from '../assets/img/illustration_main.jpg';
 import DiverseCoursesImg from '../assets/img/diverse.png';
 import CommunityCoursesImg from '../assets/img/community.png';
 import GrowthCoursesImg from '../assets/img/growth.png';
-
-
 
 const Home = () => {
     const [user, setUser] = useState(null);
