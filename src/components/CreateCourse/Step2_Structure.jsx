@@ -57,14 +57,12 @@ const Step2_Structure = ({
     }
   };
 
-const getWeekDisplay = (part) => {
-  if (!part) return '?';
-  if (typeof part.week === 'number' || typeof part.week === 'string') return part.week;
-  if (typeof part.weekNumber === 'number' || typeof part.weekNumber === 'string') return part.weekNumber;
-  return '?';
-};
-
-
+  const getWeekDisplay = (part) => {
+    if (!part) return '?';
+    if (typeof part.week === 'number' || typeof part.week === 'string') return part.week;
+    if (typeof part.weekNumber === 'number' || typeof part.weekNumber === 'string') return part.weekNumber;
+    return '?';
+  };
 
   const addFile = () => {
     if (newFile) {
@@ -113,17 +111,16 @@ const getWeekDisplay = (part) => {
   };
 
   const savePart = () => {
-const partToSave = {
-  title: newPart.title,
-  weekNumber: parseInt(newPart.week) || null,
-  sequence: editIndex !== null ? editIndex + 1 : course.parts.length + 1,
-  contents: generateContents(),
-  week: newPart.week,
-  files: newPart.files || [],
-  quizzes: newPart.quizzes || [],
-  videos: newPart.videos || []
-};
-
+    const partToSave = {
+      title: newPart.title,
+      weekNumber: parseInt(newPart.week) || null,
+      sequence: editIndex !== null ? editIndex + 1 : course.parts.length + 1,
+      contents: generateContents(),
+      week: newPart.week,
+      files: newPart.files || [],
+      quizzes: newPart.quizzes || [],
+      videos: newPart.videos || []
+    };
 
     if (editIndex !== null) {
       const updatedParts = [...course.parts];
@@ -155,22 +152,22 @@ const partToSave = {
 
       <div className="new-part-form">
         <div className="inline-group labeled-line">
-          <input type="text" name="title" placeholder="Part Title" value={newPart.title} onChange={handlePartChange} />
-          <input type="number" name="week" placeholder="Week" value={newPart.week} onChange={handlePartChange} />
+          <input data-cy="part-title" type="text" name="title" placeholder="Part Title" value={newPart.title} onChange={handlePartChange} />
+          <input data-cy="part-week" type="number" name="week" placeholder="Week" value={newPart.week} onChange={handlePartChange} />
         </div>
 
         <div className="resource-tabs">
-          <button type="button" className={activeTab === 'file' ? 'active' : ''} onClick={() => setActiveTab('file')}>📁 File</button>
-          <button type="button" className={activeTab === 'quiz' ? 'active' : ''} onClick={() => setActiveTab('quiz')}>📝 Quiz</button>
-          <button type="button" className={activeTab === 'video' ? 'active' : ''} onClick={() => setActiveTab('video')}>🎥 Video</button>
+          <button type="button" data-cy="tab-file" className={activeTab === 'file' ? 'active' : ''} onClick={() => setActiveTab('file')}>📁 File</button>
+          <button type="button" data-cy="tab-quiz" className={activeTab === 'quiz' ? 'active' : ''} onClick={() => setActiveTab('quiz')}>📝 Quiz</button>
+          <button type="button" data-cy="tab-video" className={activeTab === 'video' ? 'active' : ''} onClick={() => setActiveTab('video')}>🎥 Video</button>
         </div>
 
         <div className="tab-content">
           {activeTab === 'file' && (
             <>
               <div className="inline-group">
-                <input type="file" onChange={(e) => setNewFile(e.target.files[0])} />
-                <button type="button" onClick={addFile}>➕ Add File</button>
+                <input type="file" data-cy="file-input" onChange={(e) => setNewFile(e.target.files[0])} />
+                <button type="button" data-cy="add-file" onClick={addFile}>➕ Add File</button>
               </div>
               <ul className="preview-list">
                 {newPart.files?.map((f, idx) => (
@@ -191,7 +188,7 @@ const partToSave = {
                           <h4>{quiz.title}</h4>
                           <p>{quiz.description}</p>
                         </div>
-                        <button onClick={() => addQuiz(quiz)}>➕ Add</button>
+                        <button data-cy={`add-quiz-${quiz.id}`} onClick={() => addQuiz(quiz)}>➕ Add</button>
                       </div>
                     ))
                   ) : (
@@ -210,8 +207,8 @@ const partToSave = {
           {activeTab === 'video' && (
             <>
               <div className="inline-group">
-                <input type="text" value={newVideo} onChange={e => setNewVideo(e.target.value)} placeholder="Video Link" />
-                <button type="button" onClick={addVideo}>➕ Add Video</button>
+                <input type="text" data-cy="video-input" value={newVideo} onChange={e => setNewVideo(e.target.value)} placeholder="Video Link" />
+                <button type="button" data-cy="add-video" onClick={addVideo}>➕ Add Video</button>
               </div>
               <ul className="preview-list">
                 {newPart.videos?.map((v, idx) => (
@@ -222,38 +219,32 @@ const partToSave = {
           )}
         </div>
 
-        <button type="button" className="add-part-btn" onClick={savePart}>
+        <button type="button" data-cy="add-part" className="add-part-btn" onClick={savePart}>
           {editIndex !== null ? '💾 Save Part' : '✅ Add Part'}
         </button>
       </div>
 
       <div className="course-outline">
         {(course.parts || []).filter(p => p).map((part, index) => (
-  <details key={index} className="part-block">
-    <summary>
-      {index + 1}. Week {getWeekDisplay(part)} – {part?.title || 'Untitled'}
-    </summary>
+          <details key={index} className="part-block">
+            <summary>{index + 1}. Week {getWeekDisplay(part)} – {part?.title || 'Untitled'}</summary>
+            <div className="part-content">
+              <strong>Files:</strong>
+              <ul>{(part.files || []).map((f, i) => <li key={i}>{f?.name || f}</li>)}</ul>
 
-    <div className="part-content">
-      <strong>Files:</strong>
-      <ul>{(part.files || []).map((f, i) => <li key={i}>{f?.name || f}</li>)}</ul>
+              <strong>Quizzes:</strong>
+              <ul>{(part.quizzes || []).map((q, i) => <li key={i}>{q?.title || q}</li>)}</ul>
 
-      <strong>Quizzes:</strong>
-      <ul>{(part.quizzes || []).map((q, i) => <li key={i}>{q?.title || q}</li>)}</ul>
+              <strong>Videos:</strong>
+              <ul>{(part.videos || []).map((v, i) => (
+                <li key={i}><a href={v} target="_blank" rel="noreferrer">{v}</a></li>
+              ))}</ul>
 
-      <strong>Videos:</strong>
-      <ul>{(part.videos || []).map((v, i) => (
-        <li key={i}>
-          <a href={v} target="_blank" rel="noreferrer">{v}</a>
-        </li>
-      ))}</ul>
-
-      <button onClick={() => editPart(index)}>✏️ Edit</button>
-      <button onClick={() => deletePart(index)}>🗑️ Delete</button>
-    </div>
-  </details>
-))}
-
+              <button onClick={() => editPart(index)}>✏️ Edit</button>
+              <button onClick={() => deletePart(index)}>🗑️ Delete</button>
+            </div>
+          </details>
+        ))}
       </div>
     </div>
   );

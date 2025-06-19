@@ -1,0 +1,142 @@
+.statistics-container {
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f9fbff;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  max-width: 1400px;
+  margin: 2rem auto;
+}
+
+.main-title {
+  font-size: 2rem;
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.main-subtitle {
+  text-align: center;
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.load-sample-btn {
+  background-color: #4f46e5;
+  color: white;
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.3s ease;
+}
+
+.load-sample-btn:hover {
+  background-color: #4338ca;
+}
+
+.charts-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* PIE BOX LAYOUT */
+.chart-box.pie-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: #fff;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  flex-wrap: wrap;
+}
+
+/* LEFT SIDE: title, desc, filter */
+.pie-left {
+  flex: 1 1 250px;
+  max-width: 300px;
+  margin-right: 1.5rem;
+}
+
+.pie-left h2 {
+  font-size: 1.25rem;
+  color: #222;
+  margin-bottom: 0.3rem;
+}
+
+.chart-description {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.filter-row label {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* RIGHT SIDE: pie + legend */
+.pie-right {
+  flex: 2;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.pie-chart {
+  flex: 0 0 auto;
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  max-height: 300px;
+  min-width: 180px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #444;
+  background: #f1f1f1;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* BAR CHART SECTION */
+.chart-box.bar-box {
+  background: #fff;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.statistics-empty {
+  text-align: center;
+  font-style: italic;
+  color: #aaa;
+}

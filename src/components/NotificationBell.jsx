@@ -1,8 +1,5 @@
-// src/components/NotificationBell.jsx
 import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
-import SockJS from 'sockjs-client';
-import { Client } from '@stomp/stompjs';
 import './NotificationBell.css';
 
 const NotificationBell = () => {
@@ -11,77 +8,118 @@ const NotificationBell = () => {
     return stored ? JSON.parse(stored) : [];
   });
   const [hasNew, setHasNew] = useState(false);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
 
   useEffect(() => {
-    // Read interests directly from cookie
     const raw = Cookies.get('user');
-    if (!raw) {
-      console.warn("🟡 No user cookie for NotificationBell");
-      return;
-    }
+    if (!raw) return;
+
     let user;
     try {
       user = JSON.parse(raw);
     } catch {
-      console.error("❌ Invalid user cookie JSON");
+      console.error("❌ Invalid user cookie");
       return;
     }
+
     const interests = user.interests || [];
-    if (!interests.length) {
-      console.warn("🟡 No interests for NotificationBell");
-      return;
-    }
+    if (!interests.length) return;
 
-    console.log("🔔 NotificationBell connecting for interests:", interests);
-    const client = new Client({
-      webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
-      reconnectDelay: 5000,
-      heartbeatIncoming: 0,
-      heartbeatOutgoing: 20000,
-      debug: (msg) => console.log('📡 Bell STOMP DEBUG:', msg),
-    });
+    // Use only one connection per first category
+    const firstCategory = interests[0];
+    const ws = new WebSocket(`ws://localhost:8080/ws/${firstCategory}`);
 
-    client.onConnect = () => {
-      console.log("✅ Bell STOMP connected");
-      interests.forEach(category => {
-        const topic = `/topic/category/${category}`;
-        console.log("📡 Bell subscribing to:", topic);
-        client.subscribe(topic, msg => {
-          console.log("📬 Bell raw message:", msg.body);
-          try {
-            const data = JSON.parse(msg.body);
-            console.log("📬 Bell parsed:", data);
-            const newNoti = { id: Date.now(), text: data.message };
-            setNotifications(prev => {
-              const updated = [newNoti, ...prev].slice(0, 10);
-              localStorage.setItem('uplifted-notifications', JSON.stringify(updated));
-              return updated;
-            });
-            setHasNew(true);
-          } catch (e) {
-            console.error("❌ Bell JSON parse error:", e);
-          }
-        });
+    let lastId = null;
+    let lastTime = 0;
+
+    ws.onopen = () => {
+      console.log("✅ NotificationBell connected");
+      interests.forEach(cat => {
+        const subscribeMsg = JSON.stringify({ type: "SUBSCRIBE", category: cat });
+        ws.send(subscribeMsg);
+        console.log("📩 Subscribed to", cat);
       });
     };
 
-    client.onStompError = frame => console.error("❌ Bell STOMP error:", frame);
-    client.onWebSocketError = evt => console.error("❌ Bell WS error:", evt);
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (!data.message || !data.category) return;
 
-    client.activate();
-    return () => client.deactivate();
+        const now = Date.now();
+        if (data.courseId === lastId && now - lastTime < 3000) {
+          console.log("⏩ Skipping duplicate notification");
+          return;
+        }
+        lastId = data.courseId;
+        lastTime = now;
+
+        const newNoti = {
+          id: data.courseId ?? now,
+          text: data.message,
+          category: data.category,
+        };
+
+        setNotifications(prev => {
+          const exists = prev.some(n =>
+            n.id === newNoti.id || (n.text === newNoti.text && n.category === newNoti.category)
+          );
+          if (exists) return prev;
+
+          const updated = [newNoti, ...prev].slice(0, 10);
+          localStorage.setItem('uplifted-notifications', JSON.stringify(updated));
+          return updated;
+        });
+
+        setHasNew(true);
+      } catch (err) {
+        console.error("⚠️ Notification parse error", err);
+      }
+    };
+
+    ws.onerror = (err) => console.error("❌ WS Error", err);
+    ws.onclose = () => console.log("🔌 NotificationBell WebSocket closed");
+
+    return () => {
+      if (ws.readyState === WebSocket.OPEN) ws.close();
+    };
   }, []);
 
-  const handleClick = () => {
+  const handleBellClick = () => {
+    setDropdownVisible(!dropdownVisible);
     setHasNew(false);
-    const text = notifications.map(n => `📢 ${n.text}`).join('\n');
-    alert(text || 'No notifications');
+  };
+
+  const handleClear = () => {
+    setNotifications([]);
+    localStorage.removeItem('uplifted-notifications');
+    setDropdownVisible(false);
   };
 
   return (
-    <div className="notif-bell" onClick={handleClick}>
-      🔔
-      {hasNew && <span className="notif-dot" />}
+    <div className="notif-bell-container">
+      <div className="notif-bell" onClick={handleBellClick}>
+        🔔
+        {hasNew && <span className="notif-dot" />}
+      </div>
+      {dropdownVisible && (
+        <div className="notif-dropdown">
+          <div className="notif-scroll">
+            {notifications.length === 0 ? (
+              <div className="notif-item">No notifications</div>
+            ) : (
+              notifications.map(n => (
+                <div key={n.id} className="notif-item">📢 {n.text}</div>
+              ))
+            )}
+          </div>
+          {notifications.length > 0 && (
+            <button className="notif-clear-btn" onClick={handleClear}>
+              Clear All
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 };

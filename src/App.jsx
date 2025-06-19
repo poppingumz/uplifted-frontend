@@ -13,12 +13,14 @@ import Account from './pages/Account';
 import CreateQuizPage from './pages/Quiz/CreateQuiz'; 
 import Unauthorized from './pages/Unauthorized'; 
 import QuizPage from './pages/Quiz/QuizPage';
+import WebSocketHandler from './components/WebSocketHandler';
 
 
 function App() {
     return (
         <Router>
             <div className="app-container">
+                <WebSocketHandler />
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/courses" element={<Courses />} />
@@ -31,7 +33,6 @@ function App() {
                     <Route path="/courses/:id" element={<CourseDetails />} />
                     <Route path="/account" element={<Account />} />
                     <Route path="/account/:id" element={<Account />} />
-                    <Route path="/createquiz" element={<CreateQuizPage />} />
                     <Route path="/createquiz" element={<CreateQuizPage />} />
                     <Route path="/createquiz/:id" element={<CreateQuizPage />} />
                     <Route path="/quiz/:id" element={<QuizPage />} />

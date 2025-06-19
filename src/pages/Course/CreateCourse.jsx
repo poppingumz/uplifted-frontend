@@ -242,8 +242,19 @@ const CreateCourse = () => {
             )}
 
             <div className="step-nav-buttons">
-              {step > 1 && <button type="button" onClick={prevStep}>Previous</button>}
-              {step < 3 && <button type="button" onClick={nextStep}>Next</button>}
+              <div className="step-nav-buttons">
+  {step > 1 && (
+    <button type="button" data-cy="prev-step" onClick={prevStep}>
+      Previous
+    </button>
+  )}
+  {step < 3 && (
+    <button type="button" data-cy="next-step" onClick={nextStep}>
+      Next
+    </button>
+  )}
+</div>
+
             </div>
           </div>
         </div>

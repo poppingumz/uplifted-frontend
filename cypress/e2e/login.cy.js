@@ -12,7 +12,7 @@ it('should login successfully and land on the account page', () => {
 
   cy.visit(LOGIN_PAGE);
 
-  cy.get('input[name="email"]').type('aaa@aaa');
+  cy.get('input[name="email"]').type('racho@reje.com');
   cy.get('input[name="password"]').type('AAA');
 
   cy.get('[data-cy="login-form"]').submit();

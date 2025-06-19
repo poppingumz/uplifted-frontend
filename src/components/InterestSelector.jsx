@@ -46,6 +46,12 @@ const InterestSelector = ({ selected, setSelected }) => {
     console.log("❌ Interest removed:", category);
   };
 
+  // NEW: clear all notifications from localStorage
+  const clearNotifications = () => {
+    localStorage.removeItem('uplifted-notifications');
+    console.log("🗑️ All notifications cleared");
+  };
+
   return (
     <div className="interest-selector">
       <h3 className="interest-title">Select Your Interests</h3>
@@ -61,20 +67,39 @@ const InterestSelector = ({ selected, setSelected }) => {
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>
-        <button className="interest-add-btn" onClick={addCategory} disabled={!current}>
+        <button
+          className="interest-add-btn"
+          onClick={addCategory}
+          disabled={!current}
+        >
           + Add
         </button>
       </div>
 
       <ul className="interest-list">
-        {selected.length === 0 && <li className="interest-none">No interests selected.</li>}
+        {selected.length === 0 && (
+          <li className="interest-none">No interests selected.</li>
+        )}
         {selected.map(cat => (
           <li key={cat} className="interest-item">
             {cat}
-            <button className="interest-remove-btn" onClick={() => removeCategory(cat)}>❌</button>
+            <button
+              className="interest-remove-btn"
+              onClick={() => removeCategory(cat)}
+            >
+              ❌
+            </button>
           </li>
         ))}
       </ul>
+
+      {/* Clear Notifications Button */}
+      <button
+        className="clear-notis-btn"
+        onClick={clearNotifications}
+      >
+        Clear Notifications
+      </button>
     </div>
   );
 };
