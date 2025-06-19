@@ -19,9 +19,6 @@ build:
 
 test:
   stage: test
-  # ← ensure this job runs in your Windows shell
-  tags:
-    - shell
   script:
     # set up the Docker network & containers
     - docker network create uplifted-net
