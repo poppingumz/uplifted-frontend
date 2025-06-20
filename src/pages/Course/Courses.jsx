@@ -1,16 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import { fetchCourses } from '../../services/api';
+import { fetchFilteredCourses } from '../../services/api';
 import Navbar from '../../components/Navbar';
 import { Link } from 'react-router-dom';
 
 const CoursesPage = () => {
   const [courses, setCourses] = useState([]);
+  const [searchTitle, setSearchTitle] = useState('');
+  const [category, setCategory] = useState('');
+  const [sort, setSort] = useState('');
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    fetchCourses()
-      .then(setCourses)
+  const fetchCourses = () => {
+    fetchFilteredCourses(searchTitle, category, sort, page)
+      .then(data => {
+        setCourses(data.content);
+        setTotalPages(data.totalPages);
+      })
       .catch(console.error);
-  }, []);
+  };
+
+ useEffect(() => {
+  fetchFilteredCourses(searchTitle, category, sort, page)
+    .then(data => {
+      setCourses(data.content); 
+      setTotalPages(data.totalPages);
+    })
+    .catch(console.error);
+}, [searchTitle, category, sort, page]);
+
 
   return (
     <>
@@ -23,16 +41,35 @@ const CoursesPage = () => {
           <input
             type="text"
             placeholder="Search by title"
+            value={searchTitle}
+            onChange={(e) => {
+              setPage(0);
+              setSearchTitle(e.target.value);
+            }}
             className="filter-input"
           />
-          <select className="filter-select">
+          <select
+            className="filter-select"
+            value={category}
+            onChange={(e) => {
+              setPage(0);
+              setCategory(e.target.value);
+            }}
+          >
             <option value="">Category</option>
             <option value="Programming">Programming</option>
             <option value="Design">Design</option>
             <option value="Marketing">Marketing</option>
             <option value="Business">Business</option>
           </select>
-          <select className="filter-select">
+          <select
+            className="filter-select"
+            value={sort}
+            onChange={(e) => {
+              setPage(0);
+              setSort(e.target.value);
+            }}
+          >
             <option value="">Sort by</option>
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
@@ -43,7 +80,7 @@ const CoursesPage = () => {
         {/* Course Grid */}
         <section className="courses-grid">
           {courses.length === 0 ? (
-            <p>Loading courses...</p>
+            <p>No courses found.</p>
           ) : (
             courses.map(course => (
               <article className="course-card" key={course.id}>
@@ -69,6 +106,13 @@ const CoursesPage = () => {
               </article>
             ))
           )}
+        </section>
+
+        {/* Pagination */}
+        <section className="pagination">
+          <button disabled={page === 0} onClick={() => setPage(page - 1)}>Previous</button>
+          <span>Page {page + 1} of {totalPages}</span>
+          <button disabled={page >= totalPages - 1} onClick={() => setPage(page + 1)}>Next</button>
         </section>
       </main>
     </>

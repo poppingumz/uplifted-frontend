@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
+import Cookies from 'js-cookie';
 import { fetchQuizById } from '../../services/api';
 import '../../styles/quiz-page.css';
 
@@ -28,7 +29,7 @@ const QuizPage = () => {
     setAnswers({ ...answers, [questionId]: value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!quiz) return;
 
     let total = 0;
@@ -43,8 +44,38 @@ const QuizPage = () => {
       }
     });
 
+    const userCookie = Cookies.get('user');
+    if (!userCookie) {
+      alert('You must be logged in to submit.');
+      return;
+    }
+
+    const user = JSON.parse(userCookie);
+    const passedQuiz = correct >= quiz.passingMarks;
+
+    try {
+      // extract the JWT token you stored in the user cookie
+      const { token } = JSON.parse(userCookie);
+
+      await fetch('http://localhost:8080/api/quizzes/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          quizId: quiz.id,
+          userId: user.id,
+          score: correct,
+          passed: passedQuiz
+        })
+      });
+    } catch (err) {
+      console.error('❌ Failed to submit quiz result:', err);
+    }
+
     setScore(correct);
-    setPassed(correct >= quiz.passingMarks);
+    setPassed(passedQuiz);
     setSubmitted(true);
   };
 

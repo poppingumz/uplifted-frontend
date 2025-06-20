@@ -1,4 +1,3 @@
-// CourseDetails.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
@@ -8,7 +7,8 @@ import {
   fetchEnrolledCourses,
   enrollInCourse,
   unenrollFromCourse,
-  downloadFile
+  downloadFile,
+  fetchPassedQuizzes
 } from '../../services/api';
 import Cookies from 'js-cookie';
 import '../../styles/course-details.css';
@@ -21,6 +21,7 @@ const CourseDetails = () => {
   const [enrolled, setEnrolled] = useState(false);
   const [message, setMessage] = useState('');
   const [expandedParts, setExpandedParts] = useState({});
+  const [passedQuizzes, setPassedQuizzes] = useState([]);
 
   const reloadEnrollment = async () => {
     const userStr = Cookies.get('user');
@@ -34,6 +35,18 @@ const CourseDetails = () => {
     }
   };
 
+  const loadPassedQuizzes = async () => {
+    const userStr = Cookies.get('user');
+    if (!userStr) return;
+    const user = JSON.parse(userStr);
+    try {
+      const result = await fetchPassedQuizzes(user.id);
+      setPassedQuizzes(result); // should be array of quiz IDs
+    } catch (e) {
+      console.error("Failed to load passed quizzes:", e);
+    }
+  };
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -43,6 +56,7 @@ const CourseDetails = () => {
           setInstructor(await fetchUserById(cd.instructorId));
         }
         await reloadEnrollment();
+        await loadPassedQuizzes();
       } catch (e) {
         console.error(e);
       } finally {
@@ -153,9 +167,11 @@ const CourseDetails = () => {
                     }
 
                     if (contentType === 'QUIZ') {
+                      const passed = passedQuizzes.includes(contentId);
                       return (
                         <li key={ci}>
                           📝 <strong>{title}</strong>{' '}
+                          {passed && <span className="passed-label">✅ Passed</span>}{' '}
                           {enrolled ? (
                             <button
                               className="quiz-btn"
@@ -169,28 +185,26 @@ const CourseDetails = () => {
                         </li>
                       );
                     }
-// VIDEO
-if (contentType === 'VIDEO') {
-  return (
-    <li key={ci}>
-      🎥 <strong>Video</strong>{' '}
-      {enrolled ? (
-        <a
-          href={title}
-          target="_blank"
-          rel="noreferrer"
-          className="watch-link"
-        >
-          ▶ Watch
-        </a>
-      ) : (
-        <em>(Enroll to watch video)</em>
-      )}
-    </li>
-  );
-}
 
-
+                    if (contentType === 'VIDEO') {
+                      return (
+                        <li key={ci}>
+                          🎥 <strong>Video</strong>{' '}
+                          {enrolled ? (
+                            <a
+                              href={title}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="watch-link"
+                            >
+                              ▶ Watch
+                            </a>
+                          ) : (
+                            <em>(Enroll to watch video)</em>
+                          )}
+                        </li>
+                      );
+                    }
 
                     return null;
                   })}

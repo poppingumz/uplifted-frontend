@@ -19,10 +19,10 @@ build:
 test:
   stage: test
   script:
-    # Cleanup any leftovers
+    # Cleanup any leftovers (had error)
     - docker rm -f mysql_test backend_test frontend_test || Write-Host "No old test containers to remove"
 
-    # Ensure network exists
+    # Make sue network exists
     - |
       if (-not (docker network ls --filter name=^uplifted-net$ --format "{{.Name}}")) {
         docker network create uplifted-net
@@ -38,7 +38,7 @@ test:
         -e MYSQL_PASSWORD=testpass `
         mysql:8.0
 
-    # Start backend_test without publishing to host
+    # Start backend_test without publishing
     - docker run -d --rm --name backend_test --network uplifted-net `
         -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql_test:3306/testdb `
         -e SPRING_DATASOURCE_USERNAME=testuser `
@@ -49,14 +49,14 @@ test:
     # Rebuild frontend pointing to backend_test
     - docker build --build-arg VITE_API_URL=http://backend_test:8080 -t uplifted-frontend .
 
-    # Start frontend_test and map to host port 5173
+    # Start frontend_test and map
     - docker rm -f frontend_test 2>$null
     - docker run -d --rm --name frontend_test --network uplifted-net -p 5173:80 uplifted-frontend
 
     # Wait for services
     - Start-Sleep -Seconds 10
 
-    # Run Cypress from the project directory
+    # Run Cypress
     - Set-Location "$Env:CI_PROJECT_DIR"
     - npm install
     - npx cypress install

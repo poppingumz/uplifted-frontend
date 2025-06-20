@@ -60,10 +60,30 @@ export const fetchCourses = async () => {
   return data;
 };
 
+export const fetchFilteredCourses = async (title, category, sort, page) => {
+  const params = new URLSearchParams();
+  if (title) params.append('title', title);
+  if (category) params.append('category', category);
+  if (sort) params.append('sort', sort);
+  if (page !== undefined) params.append('page', page);
+
+  const res = await fetch(`http://localhost:8080/api/courses/filter?${params}`);
+  if (!res.ok) throw new Error('Failed to fetch filtered courses');
+  return res.json(); 
+};
+
+
 export const fetchCourseById = async id => {
   const { data } = await apiClient.get(`/api/courses/${id}`);
   return data;
 };
+
+export const fetchPassedQuizzes = async (userId) => {
+  const res = await fetch(`http://localhost:8080/api/quizzes/passed?userId=${userId}`);
+  if (!res.ok) throw new Error('Failed to fetch passed quizzes');
+  return await res.json();
+};
+
 
 export const fetchUserCourses = async instructorId => {
   const { data } = await apiClient.get(`/api/courses/instructor/${instructorId}`);
