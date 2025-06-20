@@ -79,10 +79,21 @@ export const fetchCourseById = async id => {
 };
 
 export const fetchPassedQuizzes = async (userId) => {
-  const res = await fetch(`http://localhost:8080/api/quizzes/passed?userId=${userId}`);
+  const cookie = Cookies.get('user');
+  const token = cookie ? JSON.parse(cookie).token : null;
+
+  const res = await fetch(`http://localhost:8080/api/quizzes/passed?userId=${userId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    }
+  });
+
   if (!res.ok) throw new Error('Failed to fetch passed quizzes');
   return await res.json();
 };
+
 
 
 export const fetchUserCourses = async instructorId => {
