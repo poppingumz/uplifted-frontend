@@ -18,7 +18,7 @@ const NotificationBell = () => {
     try {
       user = JSON.parse(raw);
     } catch {
-      console.error("❌ Invalid user cookie");
+      console.error("Invalid user cookie");
       return;
     }
 
@@ -48,7 +48,7 @@ const NotificationBell = () => {
 
         const now = Date.now();
         if (data.courseId === lastId && now - lastTime < 3000) {
-          console.log("⏩ Skipping duplicate notification");
+          console.log("Skipping duplicate notification");
           return;
         }
         lastId = data.courseId;
@@ -73,12 +73,12 @@ const NotificationBell = () => {
 
         setHasNew(true);
       } catch (err) {
-        console.error("⚠️ Notification parse error", err);
+        console.error("Notification parse error", err);
       }
     };
 
-    ws.onerror = (err) => console.error("❌ WS Error", err);
-    ws.onclose = () => console.log("🔌 NotificationBell WebSocket closed");
+    ws.onerror = (err) => console.error("WS Error", err);
+    ws.onclose = () => console.log("NotificationBell WebSocket closed");
 
     return () => {
       if (ws.readyState === WebSocket.OPEN) ws.close();

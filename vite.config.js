@@ -15,7 +15,6 @@ export default defineConfig({
     hmr: {
       clientPort: 5173,
     },
-    // 👇 This tells Vite to fallback to index.html for all frontend routes
     fs: {
       allow: ['..'],
     },

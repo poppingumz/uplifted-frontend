@@ -18,12 +18,12 @@ const InterestSelector = ({ selected, setSelected }) => {
         const user = JSON.parse(userStr);
         user.interests = updated;
         Cookies.set('user', JSON.stringify(user), { expires: 7 });
-        console.log("🍪 Synced interests to cookie:", updated);
+        console.log("Synced interests to cookie:", updated);
       } catch (e) {
-        console.error("❌ Failed to update interests in cookie:", e);
+        console.error("Failed to update interests in cookie:", e);
       }
     } else {
-      console.warn("⚠️ No user cookie found when trying to sync interests.");
+      console.warn("No user cookie found when trying to sync interests.");
     }
   };
 
@@ -33,7 +33,7 @@ const InterestSelector = ({ selected, setSelected }) => {
       setSelected(updated);
       localStorage.setItem('interests', JSON.stringify(updated));
       syncInterestsToCookie(updated);
-      console.log("➕ Interest added:", current);
+      console.log("Interest added:", current);
       setCurrent('');
     }
   };
@@ -43,13 +43,12 @@ const InterestSelector = ({ selected, setSelected }) => {
     setSelected(updated);
     localStorage.setItem('interests', JSON.stringify(updated));
     syncInterestsToCookie(updated);
-    console.log("❌ Interest removed:", category);
+    console.log("Interest removed:", category);
   };
 
-  // NEW: clear all notifications from localStorage
   const clearNotifications = () => {
     localStorage.removeItem('uplifted-notifications');
-    console.log("🗑️ All notifications cleared");
+    console.log("All notifications cleared");
   };
 
   return (
